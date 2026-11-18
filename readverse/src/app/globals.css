@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: #f8f7f3;
+  color: #18181b;
+}
+
+input[type="password"]::-ms-reveal {
+  display: none;
+}
