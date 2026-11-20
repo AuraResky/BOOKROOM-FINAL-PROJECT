@@ -34,10 +34,7 @@ export async function one(text, params = []) {
   return rows[0] ?? null;
 }
 
-/**
- * Bungkus beberapa kueri dalam satu transaksi BEGIN/COMMIT.
- * fn menerima objek { query, one } yang terikat ke klien transaksi.
- */
+
 export async function transaction(fn) {
   const client = await getPool().connect();
   const tx = {
