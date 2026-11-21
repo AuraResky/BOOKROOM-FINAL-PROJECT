@@ -1,176 +1,138 @@
-import "server-only";
-import {
-  randomBytes,
-  createHash,
-  scrypt,
-  timingSafeEqual,
-} from "node:crypto";
-import { promisify } from "node:util";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { getDb } from "./db";
+import crypto from 'node:crypto';
+import { cache } from 'react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { one, query } from './db';
 
-const scryptAsync = promisify(scrypt);
+// Nama cookie dan masa berlaku sesi: 7 hari
+const COOKIE_NAME = 'bookroom_session';
+const MAX_AGE = 60 * 60 * 24 * 7;
 
-const COOKIE_NAME =
-  process.env.NODE_ENV === "production"
-    ? "__Host-bookverse_session"
-    : "bookverse_session";
+// Mengubah password menjadi hash
+export function hashPassword(password) {
+  const salt = crypto.randomBytes(16).toString('hex');
 
-const SESSION_SECONDS = 60 * 60 * 24 * 7;
-
-function sha256(value) {
-  return createHash("sha256").update(value).digest("hex");
+  return `scrypt$${salt}$${crypto
+    .scryptSync(password, salt, 64)
+    .toString('hex')}`;
 }
 
-export async function hashPassword(password) {
-  const salt = randomBytes(16).toString("hex");
+// Memeriksa kecocokan password dengan hash
+export function verifyPassword(password, stored) {
+  try {
+    const [algorithm, salt, hash] = String(stored || '').split('$');
 
-  const key = await scryptAsync(password, salt, 64, {
-    N: 16384,
-    r: 8,
-    p: 1,
-    maxmem: 64 * 1024 * 1024,
-  });
+    if (
+      algorithm !== 'scrypt' ||
+      !salt ||
+      !/^[0-9a-f]{128}$/.test(hash)
+    ) {
+      return false;
+    }
 
-  return `scrypt$${salt}$${key.toString("hex")}`;
-}
-
-export async function verifyPassword(password, storedHash) {
-  if (
-    typeof storedHash !== "string" ||
-    !/^scrypt\$[a-f0-9]{32}\$[a-f0-9]{128}$/.test(storedHash)
-  ) {
+    return crypto.timingSafeEqual(
+      Buffer.from(hash, 'hex'),
+      crypto.scryptSync(password, salt, 64)
+    );
+  } catch {
     return false;
   }
-
-  const [, salt, expectedHex] = storedHash.split("$");
-
-  const actual = await scryptAsync(password, salt, 64, {
-    N: 16384,
-    r: 8,
-    p: 1,
-    maxmem: 64 * 1024 * 1024,
-  });
-
-  const expected = Buffer.from(expectedHex, "hex");
-
-  return timingSafeEqual(actual, expected);
 }
 
-export async function createSession(userId) {
-  const token = randomBytes(32).toString("hex");
+// Membuat hash token sesi
+const digest = (token) =>
+  crypto.createHash('sha256').update(token).digest('hex');
 
-  const expiresAt = new Date(
-    Date.now() + SESSION_SECONDS * 1000,
+// Menyimpan sesi ke database dan cookie
+export async function createSession(user) {
+  const token = crypto.randomBytes(32).toString('base64url');
+
+  await query(
+    `INSERT INTO sesi_login (
+      id_pengguna,
+      token_hash,
+      berlaku_sampai
+    )
+    VALUES ($1, $2, NOW() + INTERVAL '7 days')`,
+    [user.id, digest(token)]
   );
 
-  await getDb().query(
-    `INSERT INTO auth_sessions
-       (token_hash, user_id, expires_at)
-     VALUES ($1, $2, $3)`,
-    [sha256(token), userId, expiresAt],
-  );
-
-  const cookieStore = await cookies();
-
-  cookieStore.set(COOKIE_NAME, token, {
+  cookies().set(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: SESSION_SECONDS,
-    expires: expiresAt,
+    sameSite: 'lax',
+    secure:
+      process.env.SESSION_COOKIE_SECURE === 'false'
+        ? false
+        : process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: MAX_AGE,
   });
 }
 
-export async function getCurrentUser() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
-
-  if (!token || !/^[a-f0-9]{64}$/.test(token)) {
-    return null;
-  }
-
-  const result = await getDb().query(
-    `SELECT
-       u.id,
-       u.nama,
-       u.nim,
-       u.email,
-       u.role
-     FROM auth_sessions s
-     JOIN users u ON u.id = s.user_id
-     WHERE s.token_hash = $1
-       AND s.expires_at > NOW()
-       AND u.status = 'aktif'
-     LIMIT 1`,
-    [sha256(token)],
-  );
-
-  return result.rows[0] ?? null;
-}
-
-export async function requireUser() {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect("/masuk");
-  }
-
-  return user;
-}
-
+// Menghapus sesi saat logout
 export async function destroySession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
+  const token = cookies().get(COOKIE_NAME)?.value;
 
-  if (token && /^[a-f0-9]{64}$/.test(token)) {
-    await getDb().query(
-      "DELETE FROM auth_sessions WHERE token_hash = $1",
-      [sha256(token)],
+  if (token) {
+    await query(
+      'DELETE FROM sesi_login WHERE token_hash = $1',
+      [digest(token)]
     );
   }
 
-  cookieStore.set(COOKIE_NAME, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
+  cookies().delete(COOKIE_NAME);
 }
 
-export async function checkLoginAttempts(identifier) {
-  const result = await getDb().query(
-    `INSERT INTO auth_login_attempts
-       (identifier_hash, attempts, started_at)
-     VALUES ($1, 1, NOW())
-     ON CONFLICT (identifier_hash)
-     DO UPDATE SET
-       attempts = CASE
-         WHEN auth_login_attempts.started_at
-              < NOW() - INTERVAL '15 minutes'
-         THEN 1
-         ELSE auth_login_attempts.attempts + 1
-       END,
-       started_at = CASE
-         WHEN auth_login_attempts.started_at
-              < NOW() - INTERVAL '15 minutes'
-         THEN NOW()
-         ELSE auth_login_attempts.started_at
-       END
-     RETURNING attempts`,
-    [sha256(identifier.toLowerCase())],
-  );
+// Mengambil pengguna dari sesi yang masih aktif
+export const getCurrentUser = cache(async () => {
+  const token = cookies().get(COOKIE_NAME)?.value;
 
-  return result.rows[0].attempts <= 5;
+  if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) {
+    return null;
+  }
+
+  return one(
+    `SELECT
+      u.id,
+      u.full_name,
+      u.email,
+      u.role,
+      u.identity_number,
+      u.phone,
+      u.study_program,
+      u.is_active,
+      u.created_at
+    FROM v_pengguna u
+    JOIN sesi_login s ON s.id_pengguna = u.id
+    WHERE s.token_hash = $1
+      AND s.berlaku_sampai > NOW()
+      AND u.is_active = TRUE`,
+    [digest(token)]
+  );
+});
+
+// Menentukan halaman tujuan berdasarkan peran
+export function homePathFor(role) {
+  return role === 'admin'
+    ? '/admin'
+    : role === 'pegawai'
+      ? '/pegawai'
+      : role === 'mahasiswa'
+        ? '/mahasiswa'
+        : '/';
 }
 
-export async function clearLoginAttempts(identifier) {
-  await getDb().query(
-    `DELETE FROM auth_login_attempts
-     WHERE identifier_hash = $1`,
-    [sha256(identifier.toLowerCase())],
-  );
+// Membatasi akses halaman berdasarkan peran
+export async function requireRole(...roles) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
+  if (!roles.includes(user.role)) {
+    redirect(homePathFor(user.role));
+  }
+
+  return user;
 }
