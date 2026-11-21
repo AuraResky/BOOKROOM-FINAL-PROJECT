@@ -1,193 +1,215 @@
-"use server";
+'use server';
 
-import { redirect } from "next/navigation";
-import { getDb } from "../../lib/db";
+import { redirect } from 'next/navigation';
+import crypto from 'node:crypto';
+import { one, query, isUniqueViolation } from '@/lib/db';
 import {
-  hashPassword,
-  verifyPassword,
   createSession,
   destroySession,
-  checkLoginAttempts,
-  clearLoginAttempts,
-} from "../../lib/auth";
+  hashPassword,
+  verifyPassword,
+  homePathFor,
+} from '@/lib/auth';
+import {
+  str,
+  validateEmail,
+  validatePassword,
+  hasErrors,
+  fail,
+} from '@/lib/validation';
 
-function readField(formData, name) {
-  const value = formData.get(name);
-  return typeof value === "string" ? value : "";
-}
+// Memproses login melalui email atau nomor identitas
+async function login(formData) {
+  const email = str(formData, 'email').toLowerCase();
+  const password = String(formData.get('password') ?? '');
 
-function databaseError(error) {
-  // Detail teknis hanya dicatat pada server.
-  console.error("Operasi akun gagal.", {
-    code: error?.code ?? "UNKNOWN",
-  });
-
-  return {
-    error:
-      "Tidak dapat terhubung ke layanan saat ini. Silakan coba beberapa saat lagi.",
+  // Validasi isian login
+  const errors = {
+    email: email ? null : 'Email atau nomor identitas wajib diisi.',
+    password: password ? null : 'Kata sandi wajib diisi.',
   };
+
+  if (hasErrors(errors)) {
+    return fail('Periksa kembali isian Anda.', errors);
+  }
+
+  // Memastikan kunci keamanan aplikasi tersedia
+  const secret = process.env.SESSION_SECRET;
+
+  if (!secret || secret.length < 32) {
+    return fail(
+      'Layanan akun belum dapat digunakan. Hubungi pengelola.'
+    );
+  }
+
+  // Membuat identitas percobaan login dalam bentuk hash
+  const fingerprint = crypto
+    .createHmac('sha256', secret)
+    .update(email)
+    .digest('hex');
+
+  // Membatasi lima percobaan gagal dalam 15 menit
+  const attempts = await one(
+    `SELECT COUNT(*)::int AS total
+     FROM percobaan_login
+     WHERE identitas_hash=$1
+       AND berhasil=FALSE
+       AND dicoba_pada>NOW()-INTERVAL '15 minutes'`,
+    [fingerprint]
+  );
+
+  if (attempts.total >= 5) {
+    return fail(
+      'Terlalu banyak percobaan masuk. Silakan coba kembali dalam 15 menit.'
+    );
+  }
+
+  // Mencari akun berdasarkan email atau NIM/NIP
+  const user = await one(
+    `SELECT id, role, password_hash, is_active
+     FROM v_pengguna
+     WHERE LOWER(email)=$1 OR LOWER(identity_number)=$1`,
+    [email]
+  );
+
+  // Memeriksa password dan mencatat kegagalan login
+  if (!user || !verifyPassword(password, user.password_hash)) {
+    await query(
+      `INSERT INTO percobaan_login(identitas_hash,berhasil)
+       VALUES($1,FALSE)`,
+      [fingerprint]
+    );
+
+    return fail('Email/identitas atau kata sandi tidak sesuai.', {
+      password: 'Email atau kata sandi tidak sesuai.',
+    });
+  }
+
+  // Menolak akun yang dinonaktifkan
+  if (!user.is_active) {
+    return fail(
+      'Akun Anda dinonaktifkan. Hubungi bagian layanan perpustakaan.'
+    );
+  }
+
+  // Menghapus catatan kegagalan setelah login berhasil
+  await query(
+    'DELETE FROM percobaan_login WHERE identitas_hash=$1',
+    [fingerprint]
+  );
+
+  // Membuat sesi dan mengarahkan sesuai peran
+  await createSession(user);
+  redirect(homePathFor(user.role));
 }
 
-// REGISTRASI MAHASISWA
-export async function registerAction(previousState, formData) {
-  const nama = readField(formData, "nama").trim();
-  const nim = readField(formData, "nim").trim().toUpperCase();
-  const email = readField(formData, "email").trim().toLowerCase();
+// Memproses pendaftaran mahasiswa
+async function register(formData) {
+  const fullName = str(formData, 'full_name');
+  const email = str(formData, 'email').toLowerCase();
+  const nim = str(formData, 'nim').toUpperCase();
+  const studyProgram = str(formData, 'study_program');
+  const password = String(formData.get('password') ?? '');
 
-  // Jangan trim kata sandi karena spasi bisa menjadi bagian kata sandi.
-  const password = readField(formData, "password");
+  // Validasi nama, email kampus, NIM, dan password
+  const errors = {
+    full_name: !fullName
+      ? 'Nama lengkap wajib diisi.'
+      : fullName.length < 3
+        ? 'Nama lengkap minimal 3 karakter.'
+        : fullName.length > 120
+          ? 'Nama lengkap maksimal 120 karakter.'
+          : null,
 
-  if (nama.length < 3 || nama.length > 100) {
-    return {
-      error: "Nama lengkap harus terdiri dari 3–100 karakter.",
-    };
-  }
+    email: validateEmail(email, { campus: true }),
 
-  if (!/^[A-Z0-9]{5,30}$/.test(nim)) {
-    return {
-      error: "NIM harus terdiri dari 5–30 huruf atau angka.",
-    };
-  }
+    nim: !nim
+      ? 'NIM wajib diisi.'
+      : !/^[A-Z][0-9]{9}$/.test(nim)
+        ? 'NIM harus 1 huruf kapital diikuti 9 angka, contoh A123456789.'
+        : null,
 
-  if (
-    email.length > 254 ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  ) {
-    return {
-      error: "Masukkan alamat email yang valid.",
-    };
-  }
+    study_program:
+      !studyProgram ? 'Program studi wajib diisi.' : null,
 
-  if (password.length < 8) {
-    return {
-      error: "Kata sandi minimal 8 karakter.",
-    };
-  }
+    password: validatePassword(password),
+  };
 
-  if (password.length > 128) {
-    return {
-      error: "Kata sandi maksimal 128 karakter.",
-    };
+  if (hasErrors(errors)) {
+    return fail('Periksa kembali isian Anda.', errors);
   }
 
   try {
-    const passwordHash = await hashPassword(password);
-
-    // Role ditentukan server agar pendaftaran publik hanya untuk mahasiswa.
-    await getDb().query(
-      `
-        INSERT INTO users (
-          nama,
-          nim,
-          email,
-          password_hash,
-          role
-        )
-        VALUES ($1, $2, $3, $4, 'mahasiswa')
-      `,
-      [nama, nim, email, passwordHash]
+    // Menyimpan akun dengan peran mahasiswa
+    const user = await one(
+      `INSERT INTO v_pengguna (
+         full_name,
+         email,
+         password_hash,
+         role,
+         identity_number,
+         study_program
+       )
+       VALUES($1,$2,$3,'mahasiswa',$4,$5)
+       RETURNING id, role`,
+      [fullName, email, hashPassword(password), nim, studyProgram]
     );
-  } catch (error) {
-    if (error?.code === "23505") {
-      return {
-        error: "NIM atau email sudah terdaftar.",
-      };
+
+    // Membuat sesi setelah pendaftaran berhasil
+    await createSession(user);
+  } catch (err) {
+    // Menangani email atau NIM yang sudah terdaftar
+    if (isUniqueViolation(err)) {
+      const field = String(err.constraint || '').includes('identity')
+        ? 'nim'
+        : 'email';
+
+      return fail('Data sudah terdaftar.', {
+        [field]:
+          field === 'nim'
+            ? 'NIM sudah terdaftar.'
+            : 'Email sudah terdaftar.',
+      });
     }
 
-    return databaseError(error);
+    throw err;
   }
 
-  redirect("/masuk?terdaftar=1");
+  redirect('/mahasiswa');
 }
 
-// LOGIN SEMUA PERAN
-export async function loginAction(previousState, formData) {
-  const identifier = readField(formData, "identifier").trim();
-  const password = readField(formData, "password");
-
-  if (!identifier) {
-    return {
-      error: "NIM atau email wajib diisi.",
-    };
-  }
-
-  if (identifier.length > 254) {
-    return {
-      error: "Masukkan NIM atau email yang valid.",
-    };
-  }
-
-  if (!password) {
-    return {
-      error: "Kata sandi wajib diisi.",
-    };
-  }
-
-  if (password.length > 128) {
-    return {
-      error: "Kata sandi maksimal 128 karakter.",
-    };
-  }
-
-  const normalizedIdentifier = identifier.toLowerCase();
-
-  try {
-    const allowed = await checkLoginAttempts(normalizedIdentifier);
-
-    if (!allowed) {
-      return {
-        error:
-          "Terlalu banyak percobaan masuk. Silakan coba lagi setelah 15 menit.",
-      };
-    }
-
-    const result = await getDb().query(
-      `
-        SELECT
-          id,
-          password_hash,
-          status
-        FROM users
-        WHERE email = $1 OR nim = $2
-        LIMIT 1
-      `,
-      [normalizedIdentifier, identifier.toUpperCase()]
-    );
-
-    const user = result.rows[0];
-
-    if (!user) {
-      // Tetap jalankan proses hash untuk mengurangi perbedaan
-      // waktu respons antara akun yang ada dan tidak ada.
-      await hashPassword(password);
-
-      return {
-        error: "NIM, email, atau kata sandi tidak sesuai.",
-      };
-    }
-
-    const passwordValid = await verifyPassword(
-      password,
-      user.password_hash
-    );
-
-    if (!passwordValid || user.status !== "aktif") {
-      return {
-        error: "NIM, email, atau kata sandi tidak sesuai.",
-      };
-    }
-
-    await clearLoginAttempts(normalizedIdentifier);
-    await createSession(user.id);
-  } catch (error) {
-    return databaseError(error);
-  }
-
-  redirect("/akun");
-}
-
-// LOGOUT
+// Menghapus sesi dan kembali ke halaman login
 export async function logoutAction() {
   await destroySession();
-  redirect("/masuk");
+  redirect('/login');
+}
+
+// Menangani error layanan akun tanpa mengganggu redirect
+async function accountRequest(operation) {
+  try {
+    return await operation();
+  } catch (error) {
+    if (error.digest?.startsWith('NEXT_REDIRECT')) {
+      throw error;
+    }
+
+    console.error(
+      'Layanan akun gagal:',
+      error.code || error.name
+    );
+
+    return fail(
+      'Tidak dapat terhubung ke layanan saat ini. Silakan coba beberapa saat lagi.'
+    );
+  }
+}
+
+// Server action untuk login
+export async function loginAction(formData) {
+  return accountRequest(() => login(formData));
+}
+
+// Server action untuk registrasi
+export async function registerAction(formData) {
+  return accountRequest(() => register(formData));
 }
