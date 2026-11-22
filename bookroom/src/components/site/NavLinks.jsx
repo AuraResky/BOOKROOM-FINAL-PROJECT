@@ -1,0 +1,257 @@
+'use client';
+
+// Tautan navigasi dan pembukaan menu hamburger
+
+import Link from 'next/link';
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
+import { usePathname } from 'next/navigation';
+import { createPortal } from 'react-dom';
+import {
+  IconHome,
+  IconBook,
+  IconRepeat,
+  IconMegaphone,
+  IconBell,
+  IconMenu,
+  IconX,
+  IconUser,
+} from '@/components/ui/Icons';
+import styles from './Navbar.module.css';
+
+const ICONS = {
+  home: IconHome,
+  book: IconBook,
+  repeat: IconRepeat,
+  megaphone: IconMegaphone,
+  bell: IconBell,
+  user: IconUser,
+};
+
+export default function NavLinks({
+  links,
+  member = false,
+  guest = false,
+}) {
+  const pathname = usePathname();
+
+  const [open, setOpen] = useState(false);
+  const [compact, setCompact] = useState(false);
+
+  const trigger = useRef(null);
+  const container = useRef(null);
+  const desktop = useRef(null);
+
+  const mobileLinks = [
+    ...links,
+    ...(member
+      ? [{
+          href: '/mahasiswa/profil',
+          label: 'Profil Mahasiswa',
+          icon: 'user',
+        }]
+      : []),
+    ...(guest
+      ? [
+          { href: '/login', label: 'Masuk', icon: 'user' },
+          { href: '/register', label: 'Daftar', icon: 'user' },
+        ]
+      : []),
+  ];
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  useLayoutEffect(() => {
+    const inner = container.current.parentElement;
+    const brand = inner.firstElementChild;
+    const actions = inner.lastElementChild;
+
+    let frame = 0;
+    let disposed = false;
+
+    function measure() {
+      const css = getComputedStyle(inner);
+
+      const available =
+        inner.clientWidth -
+        parseFloat(css.paddingLeft) -
+        parseFloat(css.paddingRight) -
+        brand.getBoundingClientRect().width -
+        actions.getBoundingClientRect().width -
+        2 * (parseFloat(css.columnGap) || 0);
+
+      const smallScreen = window.matchMedia(
+        '(max-width: 639px)'
+      ).matches;
+
+      setCompact(
+        smallScreen || desktop.current.scrollWidth > available
+      );
+    }
+
+    function schedule() {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    }
+
+    const observer = new ResizeObserver(schedule);
+
+    [inner, brand, actions, desktop.current].forEach((element) => {
+      observer.observe(element);
+    });
+
+    window.addEventListener('resize', schedule);
+
+    document.fonts.ready.then(() => {
+      if (!disposed) schedule();
+    });
+
+    measure();
+
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!compact) setOpen(false);
+  }, [compact]);
+
+  // Kunci gulir halaman ketika menu terbuka.
+  useEffect(() => {
+    if (!open || !compact) return;
+
+    const html = document.documentElement;
+    const body = document.body;
+
+    const previousHtmlOverflow = html.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+
+    return () => {
+      html.style.overflow = previousHtmlOverflow;
+      body.style.overflow = previousBodyOverflow;
+    };
+  }, [open, compact]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleEscape(event) {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        trigger.current?.focus();
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape);
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [open]);
+
+  function active(href) {
+    if (href === '/mahasiswa') {
+      return pathname === '/mahasiswa';
+    }
+
+    return href === '/'
+      ? pathname === '/'
+      : pathname === href || pathname.startsWith(href + '/');
+  }
+
+  // Tautan menu
+  function renderLink(link, mobile = false) {
+    const Icon = ICONS[link.icon] || IconBook;
+    const isActive = active(link.href);
+
+    return (
+      <Link
+        key={link.href}
+        href={link.href}
+        onClick={() => setOpen(false)}
+        aria-current={isActive ? 'page' : undefined}
+        className={[
+          styles.link,
+          mobile ? styles.mobileLink : '',
+          isActive ? styles.active : '',
+        ].join(' ')}
+      >
+        <Icon className={styles.icon} />
+        <span>{link.label}</span>
+
+        {link.badge > 0 && (
+          <span className={styles.badge}>{link.badge}</span>
+        )}
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      ref={container}
+      className={styles.navigation}
+      data-compact={compact}
+    >
+      <nav
+        ref={desktop}
+        className={styles.desktop}
+        aria-label="Navigasi utama"
+        aria-hidden={compact || undefined}
+      >
+        {links.map((link) => renderLink(link))}
+      </nav>
+
+      <button
+        ref={trigger}
+        type="button"
+        className={styles.toggle}
+        aria-label={open ? 'Tutup menu' : 'Buka menu'}
+        aria-expanded={open}
+        aria-controls="bookroom-mobile-menu"
+        onClick={() => setOpen((value) => !value)}
+      >
+        {open ? (
+          <IconX className={styles.menuIcon} />
+        ) : (
+          <IconMenu className={styles.menuIcon} />
+        )}
+      </button>
+
+      {open &&
+        compact &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <>
+            <button
+              type="button"
+              className={styles.backdrop}
+              aria-label="Tutup menu navigasi"
+              onClick={() => setOpen(false)}
+            />
+
+            <nav
+              id="bookroom-mobile-menu"
+              className={styles.mobile}
+              aria-label="Navigasi seluler"
+            >
+              {mobileLinks.map((link) => renderLink(link, true))}
+            </nav>
+          </>,
+          document.body
+        )}
+    </div>
+  );
+}
