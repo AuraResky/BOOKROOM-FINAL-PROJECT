@@ -1,8 +1,76 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind 4: utilitas dan warna BookRoom */
+@import "tailwindcss";
 
+@theme {
+  --color-navy-600: #294C79;
+  --color-navy-700: #193353;
+  --color-navy-900: #10243F;
+  --color-navy: #1A365D;
+  --color-gold: #C69B3D;
+  --color-gold-light: #E5C987;
+  --color-gold-dark: #82601D;
+  --color-canvas: #F4F3EF;
+  --color-cream-50: #FFFFFF;
+  --color-cream-100: #F8F9FB;
+  --color-cream-200: #EDF0F5;
+  --color-cream-300: #DCE3ED;
+  --color-cream: #F4F3EF;
+  --color-line: #E2DED5;
+  --color-coral: #1A365D;
+  --color-coral-light: #294C79;
+  --color-coral-dark: #193353;
+  --color-coral-soft: #EDF2F8;
+  --color-teal: #315E52;
+  --color-teal-light: #71998A;
+  --color-teal-dark: #285345;
+  --color-teal-soft: #EEF5F1;
+  --color-plum: #526887;
+  --color-plum-light: #8D9EB5;
+  --color-plum-soft: #EDF1F7;
+  --color-sun: #C69B3D;
+  --color-sun-soft: #FBF5E7;
+  --color-blush: #8A4343;
+  --color-blush-soft: #FAEFEF;
+  --color-ok: #26734D;
+  --color-warn: #9C6A16;
+  --color-danger: #A12F36;
+  --color-ink: #181B1F;
+  --color-ink-muted: #525964;
+  --color-ink-soft: #667080;
+
+  /* Bayangan komponen */
+  --shadow-card: 0 1px 3px rgba(26,54,93,.04);
+  --shadow-retro: 0 3px 10px rgba(26,54,93,.08);
+  --shadow-retro-sm: 0 1px 3px rgba(26,54,93,.05);
+  --shadow-lift: 0 7px 20px rgba(26,54,93,.09);
+  --shadow-book: 3px 5px 12px rgba(26,54,93,.16);
+
+  /* Ukuran yang mengikuti tampilan sebelumnya */
+  --radius-sm: 0.125rem;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --animate-fadein: fadein 0.2s ease-out;
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+/* Font berasal dari variabel pada layout aplikasi */
+@theme inline {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+:root {
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Gaya dasar halaman */
 @layer base {
+  *, ::before, ::after { border-color: #E5E7EB; }
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
   html { -webkit-font-smoothing: antialiased; color-scheme: light; }
   body { @apply bg-canvas font-sans text-ink; line-height: 1.65; }
   button, input, select, textarea { font: inherit; }
@@ -12,19 +80,20 @@
   input[type="search"]::-webkit-search-cancel-button { cursor: pointer; }
 }
 
+/* Komponen; setiap tombol memakai utilitas langsung */
 @layer components {
   .display { @apply font-sans font-semibold tracking-tight text-navy; line-height: 1.25; }
   .card { @apply rounded-xl border border-line bg-white shadow-card; }
   .card-soft { @apply rounded-xl border border-line bg-white; }
   .btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
   .btn:active:not(:disabled) { transform: translateY(1px); }
-  .btn-primary { @apply btn border border-navy bg-navy text-white hover:border-navy-600 hover:bg-navy-600; }
-  .btn-gold { @apply btn border border-gold bg-gold text-navy-900 hover:bg-gold-light; }
-  .btn-dark { @apply btn border border-navy bg-navy text-white hover:bg-navy-600; }
-  .btn-outline { @apply btn border border-line bg-white text-navy hover:border-navy/40 hover:bg-cream-100; }
-  .btn-ghost { @apply btn text-navy hover:bg-navy/5; }
-  .btn-danger { @apply btn border border-danger bg-danger text-white hover:bg-red-800; }
-  .btn-success { @apply btn border border-ok bg-ok text-white hover:bg-emerald-800; }
+  .btn-primary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border border-navy bg-navy text-white hover:border-navy-600 hover:bg-navy-600; }
+  .btn-gold { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border border-gold bg-gold text-navy-900 hover:bg-gold-light; }
+  .btn-dark { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border border-navy bg-navy text-white hover:bg-navy-600; }
+  .btn-outline { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border border-line bg-white text-navy hover:border-navy/40 hover:bg-cream-100; }
+  .btn-ghost { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-navy hover:bg-navy/5; }
+  .btn-danger { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border border-danger bg-danger text-white hover:bg-red-800; }
+  .btn-success { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition duration-200 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 border border-ok bg-ok text-white hover:bg-emerald-800; }
   .btn-sm { @apply min-h-9 px-3 py-1.5 text-xs; }
   .input { @apply min-h-11 w-full rounded-lg border border-line bg-white px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-soft transition focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/15; }
   .input-error { @apply border-danger focus:border-danger focus:ring-danger/15; }
@@ -36,7 +105,7 @@
   .book-pages { background: repeating-linear-gradient(to bottom, #faf9f4 0 1px, #e2ded5 1px 2px); }
 }
 
-/* Structured tables and restrained interactions across every role. */
+/* Tabel dan interaksi pada semua peran */
 tbody tr { transition: background-color 180ms ease-out; }
 tbody tr:hover { background: #F4F6FA; }
 .shimmer-sweep, .rays::after { display: none; }
@@ -51,7 +120,7 @@ tbody tr:hover { background: #F4F6FA; }
   .formal-book-card:hover { transform: none; }
 }
 
-/* Editorial blue: interactive reading surfaces with restrained academic styling. */
+/* Tampilan biru dan interaksi kartu buku */
 .display, .font-display { font-family: var(--font-display), Georgia, serif; font-weight: 500; letter-spacing: -.025em; }
 .display { line-height: 1.18; }
 .literary-hero {

@@ -57,7 +57,7 @@ export async function createSession(user) {
     [user.id, digest(token)]
   );
 
-  cookies().set(COOKIE_NAME, token, {
+  (await cookies()).set(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: 'lax',
     secure:
@@ -71,7 +71,7 @@ export async function createSession(user) {
 
 // Menghapus sesi saat logout
 export async function destroySession() {
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const token = (await cookies()).get(COOKIE_NAME)?.value;
 
   if (token) {
     await query(
@@ -80,12 +80,12 @@ export async function destroySession() {
     );
   }
 
-  cookies().delete(COOKIE_NAME);
+  (await cookies()).delete(COOKIE_NAME);
 }
 
 // Mengambil pengguna dari sesi yang masih aktif
 export const getCurrentUser = cache(async () => {
-  const token = cookies().get(COOKIE_NAME)?.value;
+  const token = (await cookies()).get(COOKIE_NAME)?.value;
 
   if (!token || !/^[A-Za-z0-9_-]{43}$/.test(token)) {
     return null;
