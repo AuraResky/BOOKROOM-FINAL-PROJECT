@@ -114,7 +114,7 @@ export default function TopNavbar({
 
               <IconChevron className={styles.chevron} />
             </Link>
-          ) : user ? (
+          ) : user?.role === 'admin' || user?.role === 'pegawai' ? (
             <Link
               href={
                 user.role === 'admin'
