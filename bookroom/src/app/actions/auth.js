@@ -1,8 +1,8 @@
+
 'use server';
 
 import { redirect } from 'next/navigation';
-import crypto from 'node:crypto';
-import { one, query, isUniqueViolation } from '@/lib/db';
+import { one, isUniqueViolation } from '@/lib/db';
 import {
   createSession,
   destroySession,
@@ -42,28 +42,6 @@ async function login(formData) {
     );
   }
 
-  // Membuat identitas percobaan login dalam bentuk hash
-  const fingerprint = crypto
-    .createHmac('sha256', secret)
-    .update(email)
-    .digest('hex');
-
-  // Membatasi lima percobaan gagal dalam 15 menit
-  const attempts = await one(
-    `SELECT COUNT(*)::int AS total
-     FROM percobaan_login
-     WHERE identitas_hash=$1
-       AND berhasil=FALSE
-       AND dicoba_pada>NOW()-INTERVAL '15 minutes'`,
-    [fingerprint]
-  );
-
-  if (attempts.total >= 5) {
-    return fail(
-      'Terlalu banyak percobaan masuk. Silakan coba kembali dalam 15 menit.'
-    );
-  }
-
   // Mencari akun berdasarkan email atau NIM/NIP
   const user = await one(
     `SELECT id, role, password_hash, is_active
@@ -72,14 +50,7 @@ async function login(formData) {
     [email]
   );
 
-  // Memeriksa password dan mencatat kegagalan login
   if (!user || !verifyPassword(password, user.password_hash)) {
-    await query(
-      `INSERT INTO percobaan_login(identitas_hash,berhasil)
-       VALUES($1,FALSE)`,
-      [fingerprint]
-    );
-
     return fail('Email/identitas atau kata sandi tidak sesuai.', {
       password: 'Email atau kata sandi tidak sesuai.',
     });
@@ -91,12 +62,6 @@ async function login(formData) {
       'Akun Anda dinonaktifkan. Hubungi bagian layanan perpustakaan.'
     );
   }
-
-  // Menghapus catatan kegagalan setelah login berhasil
-  await query(
-    'DELETE FROM percobaan_login WHERE identitas_hash=$1',
-    [fingerprint]
-  );
 
   // Membuat sesi dan mengarahkan sesuai peran
   await createSession(user);
@@ -167,8 +132,8 @@ async function register(formData) {
       return fail('Data sudah terdaftar.', {
         [field]:
           field === 'nim'
-            ? 'NIM sudah terdaftar.'
-            : 'Email sudah terdaftar.',
+            ? 'NIM'
+            : 'email',
       });
     }
 
