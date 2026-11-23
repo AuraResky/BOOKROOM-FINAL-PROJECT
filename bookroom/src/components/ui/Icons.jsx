@@ -45,7 +45,7 @@ export function IconStar({ filled = true, className = 'h-4 w-4' }) {
   );
 }
 
-/** Buku terbuka sebagai identitas utama. */
+//Buku terbuka sebagai identitas utama.
 export function LogoMark({ className = 'h-9 w-9', dark = false }) {
   return <svg viewBox="0 0 50 50" fill="none" className={className} aria-hidden="true"><rect x="10" y="9" width="13" height="35" rx="6.5" transform="rotate(17 16.5 26.5)" stroke={'#C69B3D'} strokeWidth="3.4" /><rect x="29" y="5" width="13" height="35" rx="6.5" stroke={dark ? '#F4F3EF' : '#1A365D'} strokeWidth="3.4" /></svg>;
 }
