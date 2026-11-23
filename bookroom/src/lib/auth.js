@@ -4,7 +4,6 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { one, query } from './db';
 
-// Nama cookie dan masa berlaku sesi: 7 hari
 const COOKIE_NAME = 'bookroom_session';
 const MAX_AGE = 60 * 60 * 24 * 7;
 
@@ -113,13 +112,9 @@ export const getCurrentUser = cache(async () => {
 
 // Menentukan halaman tujuan berdasarkan peran
 export function homePathFor(role) {
-  return role === 'admin'
-    ? '/admin'
-    : role === 'pegawai'
-      ? '/pegawai'
-      : role === 'mahasiswa'
-        ? '/mahasiswa'
-        : '/';
+  if (role === 'admin') return '/admin';
+  if (role === 'pegawai') return '/pegawai';
+  return '/';
 }
 
 // Membatasi akses halaman berdasarkan peran

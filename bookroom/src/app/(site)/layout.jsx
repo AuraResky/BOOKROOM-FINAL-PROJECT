@@ -1,11 +1,15 @@
-// Kerangka halaman: layout publik dan api pencarian
-import { getCurrentUser } from '@/lib/auth';
+// layout publik dan api pencarian
+import { redirect } from 'next/navigation';
+import { getCurrentUser, homePathFor } from '@/lib/auth';
 import { one } from '@/lib/db';
 import TopNavbar, { Wordmark } from '@/components/site/TopNavbar';
 import { generateDueReminders, countUnread } from '@/lib/notifications';
 
 export default async function SiteLayout({ children }) {
   const user = await getCurrentUser();
+  if (user && (user.role === 'admin' || user.role === 'pegawai')) {
+  redirect(homePathFor(user.role));
+  }
   const isStudent = user?.role === 'mahasiswa';
   if (isStudent) await generateDueReminders(user.id);
   const [count, unread] = isStudent

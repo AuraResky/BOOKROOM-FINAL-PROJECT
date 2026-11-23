@@ -114,17 +114,6 @@ export default function TopNavbar({
 
               <IconChevron className={styles.chevron} />
             </Link>
-          ) : user?.role === 'admin' || user?.role === 'pegawai' ? (
-            <Link
-              href={
-                user.role === 'admin'
-                  ? '/admin'
-                  : '/pegawai'
-              }
-              className={styles.signup}
-            >
-              Panel
-            </Link>
           ) : (
             <>
               <Link
