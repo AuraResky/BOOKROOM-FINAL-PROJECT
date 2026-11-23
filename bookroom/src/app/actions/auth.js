@@ -1,4 +1,5 @@
-// validasi registrasi memakai NIM satu huruf dan sembilan angka.'use server';
+// validasi registrasi memakai NIM satu huruf dan sembilan angka.
+'use server';
 
 import { redirect } from 'next/navigation';
 import crypto from 'node:crypto';

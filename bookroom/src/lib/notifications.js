@@ -116,7 +116,7 @@ export function getNotifications(
   return query(
     `SELECT
       id,
-      jenis AS type,
+      type,
       title,
       message,
       link,
