@@ -141,7 +141,7 @@ export async function getCatalog({
   };
 }
 
-// Mengambil detail buku dan jumlah eksemplar yang dipinjam
+// Mengambil detail buku dan jumlah buku yang dipinjam
 export function getBook(id) {
   if (!/^\d+$/.test(String(id))) return null;
 

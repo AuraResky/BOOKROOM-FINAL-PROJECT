@@ -201,7 +201,7 @@ function BookForm({ book, categories, onDone }) {
           />
 
           <TextInput
-            label="Stok total (eksemplar)"
+            label="Stok total (Stok Buku)"
             name="stock"
             inputMode="numeric"
             defaultValue={book?.total_stock ?? 1}
@@ -448,7 +448,7 @@ export default function BookManager({ books, categories }) {
                   <StockBadge stock={b.stock} />
 
                   <p className="mt-1 text-xs text-ink-muted">
-                    Dari {b.total_stock} eksemplar
+                    Dari {b.total_stock} Stok Buku
                   </p>
 
                   {b.on_loan > 0 && (

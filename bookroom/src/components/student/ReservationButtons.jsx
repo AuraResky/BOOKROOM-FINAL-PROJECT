@@ -37,7 +37,7 @@ export function ReserveButton({ bookId, disabledReason, queueLength = 0 }) {
       {!result && !disabledReason && (
         <p className="text-sm text-ink-muted">
           Stok sedang habis. {queueLength > 0 ? `${queueLength} mahasiswa sudah mengantre. ` : ''}
-          Saat eksemplar kembali, buku ditahan untuk pemesan terdepan selama 2 hari.
+          Saat Buku kembali, buku ditahan untuk pemesan terdepan selama 2 hari.
         </p>
       )}
       {disabledReason && !result && <Alert tone="amber">{disabledReason}</Alert>}

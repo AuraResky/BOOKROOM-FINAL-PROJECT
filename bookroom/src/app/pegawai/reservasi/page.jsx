@@ -53,7 +53,7 @@ export default async function ReservationQueuePage({ searchParams }) {
       <PageHeader
         eyebrow={user.role === 'admin' ? 'Admin' : 'Pegawai Perpustakaan'}
         title="Antrean Reservasi Buku"
-        description="Mahasiswa dapat mengantre buku yang stoknya habis. Saat buku dikembalikan, sistem otomatis menahan satu eksemplar untuk antrean terdepan selama 2 hari dan mengirim notifikasi."
+        description="Mahasiswa dapat mengantre buku yang stoknya habis. Saat buku dikembalikan, sistem otomatis menahan satu stok buku untuk antrean terdepan selama 2 hari dan mengirim notifikasi."
       />
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">

@@ -61,7 +61,7 @@ export default async function AdminDashboard() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <StatCard label="Total judul buku" value={stats.titles} icon={IconBooks} />
-        <StatCard label="Total eksemplar stok" value={stats.copies} hint={`${stats.on_shelf} di rak · ${stats.active_loans} dipinjam`} icon={IconBook} tone="gold" />
+        <StatCard label="Total stok buku" value={stats.copies} hint={`${stats.on_shelf} di rak · ${stats.active_loans} dipinjam`} icon={IconBook} tone="gold" />
         <StatCard label="Mahasiswa terdaftar" value={stats.students} hint={`${stats.active_students} akun aktif`} icon={IconUsers} tone="green" />
         <StatCard label="Transaksi aktif" value={stats.active_loans} hint={`${stats.overdue} terlambat · ${stats.pending} menunggu`} icon={IconRepeat} tone="amber" />
         <StatCard label="Total denda lunas" value={formatRupiah(stats.fine_paid)} hint={`Tertunggak ${formatRupiah(stats.fine_due)}`} icon={IconWallet} tone="green" />

@@ -33,7 +33,7 @@ export default async function BookDetailPage({ params }) {
     isStudent
       ? one(`SELECT code, status FROM v_peminjaman WHERE user_id = $1 AND book_id = $2 AND status NOT IN ('Selesai','Ditolak') LIMIT 1`, [user.id, book.id])
       : null,
-    // Antrean reservasi: eksemplar "Siap Diambil" milik orang lain mengurangi stok yang bisa diajukan.
+    // Antrean reservasi: buku "Siap Diambil" milik orang lain mengurangi stok yang bisa diajukan
     one(`SELECT COUNT(*) FILTER (WHERE status = 'Menunggu')::int AS waiting,
                 COUNT(*) FILTER (WHERE status = 'Siap Diambil' AND pickup_deadline >= CURRENT_DATE AND user_id <> $2)::int AS held_others
            FROM v_reservasi WHERE book_id = $1`, [book.id, user?.id ?? 0]),
@@ -65,7 +65,7 @@ export default async function BookDetailPage({ params }) {
     ['Tahun Terbit', <Mono key="y">{book.publish_year}</Mono>],
     ['Kategori', <span key="c">{book.category_name} <Mono className="text-ink-soft">· {book.category_code}</Mono></span>],
     ['Lokasi Rak', <Mono key="r">{book.shelf_location || '—'}</Mono>],
-    ['Sisa Stok', <StockBadge key="s" stock={book.stock} />],
+    ['Stok Buku', <StockBadge key="s" stock={book.stock} />],
     ['Maks. Lama Pinjam', `${book.max_loan_days} hari`],
     ['Tarif Denda', `${formatRupiah(book.fine_per_day)} / hari`],
   ];
@@ -112,7 +112,7 @@ export default async function BookDetailPage({ params }) {
                   {myReservation.status === 'Siap Diambil' ? (
                     <>
                       <p className="font-bold text-navy">Reservasi Anda siap dipinjam</p>
-                      <p className="mt-1 text-ink-muted">Satu eksemplar ditahan untuk Anda. Ajukan pinjam paling lambat <Mono>{formatDate(myReservation.pickup_deadline)}</Mono>.</p>
+                      <p className="mt-1 text-ink-muted">Satu buku ditahan untuk Anda. Ajukan pinjam paling lambat <Mono>{formatDate(myReservation.pickup_deadline)}</Mono>.</p>
                     </>
                   ) : (
                     <>

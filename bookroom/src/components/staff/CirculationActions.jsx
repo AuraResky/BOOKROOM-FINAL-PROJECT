@@ -70,7 +70,7 @@ function ReasonModal({ open, onClose, title, description, required, onSubmit, pe
       <form noValidate onSubmit={submit} className="space-y-4">
         <TextArea label={required ? 'Alasan penolakan *' : 'Catatan (opsional)'} name="reason" rows={4} value={reason}
           onChange={(e) => setReason(e.target.value)} error={error}
-          placeholder="Contoh: Eksemplar sedang direservasi untuk kebutuhan perkuliahan." />
+          placeholder="Contoh: Buku sedang direservasi untuk kebutuhan perkuliahan." />
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className="btn-ghost">Batal</button>
           <button type="submit" disabled={pending} className="btn-danger">{pending && <Spinner />} {confirmLabel}</button>

@@ -228,7 +228,7 @@ async function saveBook(id, formData) {
         );
       }
 
-      // Menyesuaikan jumlah eksemplar dengan stok
+      // Menyesuaikan jumlah buku dengan stok
       await synchronizeCopies(tx, book.id, v.stock);
     });
   } catch (error) {

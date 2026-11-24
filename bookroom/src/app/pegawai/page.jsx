@@ -171,8 +171,7 @@ export default async function CirculationPage({
   const sp = (await searchParams) || {};
 
   const isAdmin = user.role === 'admin';
-  // Admin membuka meja sirkulasi lewat /admin/sirkulasi; tanpa tab langsung ke antrean verifikasi.
-  const basePath = isAdmin ? '/admin/sirkulasi' : '/pegawai';
+  const basePath = isAdmin ? '/admin/layanan-pinjam' : '/pegawai';
 
   const tab = TABS.some((item) => item.key === sp.tab)
     ? sp.tab

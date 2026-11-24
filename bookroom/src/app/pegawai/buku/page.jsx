@@ -32,7 +32,7 @@ export default async function BooksPage() {
         description="Kelola metadata, stok, aturan pinjam, dan sampul. Buku yang sedang dipinjam tidak dapat dihapus." />
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard label="Judul terdaftar" value={books.length} icon={IconBooks} />
-        <StatCard label="Eksemplar di rak / dipinjam" value={`${totalStock} / ${onLoan}`} icon={IconBook} tone="gold" />
+        <StatCard label="Stok buku di rak / dipinjam" value={`${totalStock} / ${onLoan}`} icon={IconBook} tone="gold" />
         <StatCard label="Judul stok habis" value={empty} icon={IconAlert} tone="red" />
       </div>
       <BookManager books={books} categories={categories} />

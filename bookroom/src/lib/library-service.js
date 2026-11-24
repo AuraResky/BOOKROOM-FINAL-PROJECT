@@ -112,7 +112,7 @@ async function lockLoan(tx, id, ownerId) {
   return { loan, book };
 }
 
-// Menghitung eksemplar yang ditahan untuk pemesan lain
+// Menghitung buku yang ditahan untuk pemesan lain
 async function heldByOthers(tx, bookId, userId = 0) {
   const row = await tx.one(
     `SELECT COUNT(*)::int AS n
@@ -344,7 +344,7 @@ export async function requestLoan(userId, bookId) {
 
     const held = await heldByOthers(tx, book.id, userId);
 
-    // Memeriksa stok dan eksemplar yang ditahan untuk reservasi
+    // Memeriksa stok dan buku yang ditahan untuk reservasi
     demand(
       book.stok_tersedia > 0,
       'Stok buku sedang habis. Anda dapat masuk antrean reservasi.'
@@ -352,7 +352,7 @@ export async function requestLoan(userId, bookId) {
 
     demand(
       book.stok_tersedia - held > 0,
-      'Eksemplar tersisa sedang ditahan untuk mahasiswa yang lebih dulu mereservasi. Anda dapat masuk antrean reservasi.'
+      'Buku tersisa sedang ditahan untuk mahasiswa yang lebih dulu mereservasi. Anda dapat masuk antrean reservasi.'
     );
 
     const open = await tx.query(
@@ -397,7 +397,7 @@ export async function approveLoan(staffId, id) {
 
     const held = await heldByOthers(tx, book.id, loan.id_pengguna);
 
-    // Memilih satu eksemplar yang tersedia
+    // Memilih satu buku yang tersedia
     const copy = await tx.one(
       `SELECT id FROM eksemplar_buku
        WHERE id_buku=$1 AND status='Tersedia'
@@ -412,7 +412,7 @@ export async function approveLoan(staffId, id) {
 
     demand(
       book.stok_tersedia - held > 0,
-      'Eksemplar tersisa sedang ditahan untuk pemesan reservasi. Pengajuan belum disetujui.'
+      'buku tersisa sedang ditahan untuk pemesan reservasi. Pengajuan belum disetujui.'
     );
 
     await tx.query(
@@ -665,7 +665,7 @@ export async function returnLoan(staffId, id) {
       [id, staffId]
     );
 
-    // Mengembalikan eksemplar dan stok tersedia
+    // Mengembalikan buku dan stok tersedia
     await tx.query(
       "UPDATE eksemplar_buku SET status='Tersedia' WHERE id=$1",
       [loan.id_eksemplar]
@@ -805,7 +805,7 @@ export async function saveReview(userId, loanId, rating, comment) {
   });
 }
 
-// Menyesuaikan jumlah eksemplar dengan stok total buku
+// Menyesuaikan jumlah buku dengan stok total buku
 export async function synchronizeCopies(tx, bookId, total) {
   const copies = await tx.query(
     `SELECT * FROM eksemplar_buku
@@ -823,7 +823,7 @@ export async function synchronizeCopies(tx, bookId, total) {
     `Minimal ${borrowed} eksemplar karena sedang dipinjam.`
   );
 
-  // Menambahkan eksemplar baru
+  // Menambahkan buku baru
   if (total > copies.length) {
     for (let i = copies.length; i < total; i++) {
       await tx.query(
@@ -836,7 +836,7 @@ export async function synchronizeCopies(tx, bookId, total) {
       );
     }
   } else if (total < copies.length) {
-    // Menarik eksemplar tersedia ketika stok dikurangi
+    // Menarik buku tersedia ketika stok dikurangi
     const remove = copies
       .filter((x) => x.status === 'Tersedia')
       .slice(0, copies.length - total)

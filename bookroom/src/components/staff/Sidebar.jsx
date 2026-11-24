@@ -29,7 +29,7 @@ export default function Sidebar({ items, user, roleLabel, initials }) {
     document.addEventListener('keydown', close);
     return () => { document.body.style.overflow = previous; document.removeEventListener('keydown', close); };
   }, [mobileOpen]);
-  // Membuka atau menutup panel.
+  // Membuka atau menutup sidebar
   function toggle() {
     if (window.matchMedia('(max-width: 1023px)').matches) { setMobileOpen(false); return; }
     setCollapsed((value) => { const next = !value; try { localStorage.setItem(STORAGE_KEY, next ? '1' : '0'); } catch {} return next; });
@@ -50,16 +50,39 @@ export default function Sidebar({ items, user, roleLabel, initials }) {
           <Tooltip show={collapsed}>Buka sidebar</Tooltip>
         </button>
         <button type="button" onClick={() => setMobileOpen(false)} className="absolute right-3 top-6 text-white lg:hidden" aria-label="Tutup navigasi"><IconX className="h-5 w-5" /></button>
-        <nav id="staff-menu-links" className="flex-1 space-y-1 overflow-y-auto overflow-x-visible px-3 py-5" aria-label={`Navigasi ${roleLabel}`}>
+<nav
+          id="staff-menu-links"
+          className="flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 py-5"
+          aria-label={`Navigasi ${roleLabel}`}
+        >
           {items.map((item) => {
             const Icon = ICONS[item.icon] || IconBook;
             const active = isActive(item.href);
-            return <Link key={item.href} href={item.href} aria-label={item.label} title={collapsed ? item.label : undefined} aria-current={active ? 'page' : undefined} onClick={() => setMobileOpen(false)} className={`group relative flex min-h-11 items-center gap-3 rounded-md border-l-2 px-3 text-sm font-medium transition ${active ? 'border-gold bg-white/10 text-white' : 'border-transparent text-slate-200 hover:bg-white/5 hover:text-white'}`}>
-              <Icon className={`h-5 w-5 shrink-0 ${active ? 'text-gold-light' : ''}`} />
-              <span className={`min-w-0 truncate ${hidden}`}>{item.label}</span>
-              {item.badge > 0 && <span className={`ml-auto rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs text-gold-light ${hidden}`}>{item.badge}</span>}
-              <Tooltip show={collapsed}>{item.label}</Tooltip>
-            </Link>;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-label={item.label}
+                title={collapsed ? item.label : undefined}
+                aria-current={active ? 'page' : undefined}
+                onClick={() => setMobileOpen(false)}
+                className={`group relative flex min-h-11 items-center gap-3 rounded-md border-l-2 px-3 text-sm font-medium transition ${
+                  collapsed ? 'lg:justify-center lg:px-0' : ''
+                } ${
+                  active
+                    ? 'border-gold bg-white/10 text-white'
+                    : 'border-transparent text-slate-200 hover:bg-white/5 hover:text-white'
+                }`}
+              >
+                <Icon className={`h-5 w-5 shrink-0 ${active ? 'text-gold-light' : ''}`} />
+                <span className={`min-w-0 truncate ${hidden}`}>{item.label}</span>
+                {item.badge > 0 && (
+                  <span className={`ml-auto rounded bg-white/10 px-1.5 py-0.5 font-mono text-xs text-gold-light ${hidden}`}>
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
           })}
         </nav>
         <div className="border-t border-white/15 p-3">
