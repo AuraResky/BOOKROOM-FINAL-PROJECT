@@ -3,25 +3,58 @@ import { apiError, requireApiRole, handle } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
-const STATUSES = ['Menunggu Konfirmasi', 'Dipinjam', 'Perpanjangan Diajukan', 'Perpanjangan Disetujui', 'Perpanjangan Ditolak', 'Selesai', 'Ditolak'];
+const STATUSES = [
+  'Menunggu Konfirmasi',
+  'Dipinjam',
+  'Perpanjangan Diajukan',
+  'Perpanjangan Disetujui',
+  'Perpanjangan Ditolak',
+  'Selesai',
+  'Ditolak',
+];
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-// Titik koma: pemisah daftar bawaan Excel berlocale Indonesia, sehingga kolom langsung terpisah
 const SEP = ';';
 
-// Menyiapkan isi kolom CSV agar aman dibuka di Excel
-function cell(value) {
-  if (value === null || value === undefined) return '';
-  let s = value instanceof Date ? value.toISOString() : String(value);
-  // Cegah CSV/formula injection saat dibuka di Excel.
-  if (typeof value === 'string' && /^[=+\-@\t\r]/.test(s)) s = `'${s}`;
-  return /[";\n\r,]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+// Format tanggal lokal (YYYY-MM-DD) agar tidak bergeser ke UTC ISOString
+function formatDateCell(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
+
+// Menyiapkan isi kolom CSV agar rapi dan aman dibuka di Excel
+function cell(value, { forceText = false } = {}) {
+  if (value === null || value === undefined) return '';
+  let s = value instanceof Date ? formatDateCell(value) : String(value);
+  s = s.replace(/\r?\n|\r/g, ' ').trim();
+  if (forceText && s !== '') {
+    return `="${s.replace(/"/g, '""')}"`;
+  }
+  if (typeof value === 'string' && /^[=+\-@\t]/.test(s)) {
+    s = `'${s}`;
+  }
+  return /[";,]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+const TEXT_KEYS = new Set(['identity_number', 'isbn']);
 
 // Menyusun kolom dan baris laporan menjadi CSV
 function toCsv(headers, rows) {
-  const lines = [headers.map(([, label]) => cell(label)).join(SEP)];
-  for (const row of rows) lines.push(headers.map(([key]) => cell(row[key])).join(SEP));
-  return '﻿' + lines.join('\r\n') + '\r\n';
+  const lines = [
+    `sep=${SEP}`,
+    headers.map(([, label]) => cell(label)).join(SEP),
+  ];
+
+  for (const row of rows) {
+    lines.push(
+      headers
+        .map(([key]) => cell(row[key], { forceText: TEXT_KEYS.has(key) }))
+        .join(SEP)
+    );
+  }
+
+  return '\uFEFF' + lines.join('\r\n') + '\r\n';
 }
 
 // Memeriksa format tanggal filter laporan
@@ -33,27 +66,56 @@ const REPORTS = {
   transaksi: {
     title: 'transaksi-peminjaman',
     headers: [
-      ['code', 'Kode Transaksi'], ['status', 'Status'], ['identity_number', 'NIM'], ['full_name', 'Nama Mahasiswa'],
-      ['title', 'Judul Buku'], ['isbn', 'ISBN'], ['category', 'Kategori'], ['requested_at', 'Diajukan'],
-      ['loan_date', 'Tanggal Pinjam'], ['due_date', 'Jatuh Tempo'], ['return_date', 'Tanggal Kembali'],
-      ['extension_count', 'Perpanjangan'], ['late_days', 'Hari Terlambat'], ['fine_amount', 'Denda (Rp)'],
-      ['fine_status', 'Status Denda'], ['reject_reason', 'Alasan Penolakan'], ['handler', 'Petugas'],
+      ['code', 'Kode Transaksi'],
+      ['status', 'Status'],
+      ['identity_number', 'NIM'],
+      ['full_name', 'Nama Mahasiswa'],
+      ['title', 'Judul Buku'],
+      ['isbn', 'ISBN'],
+      ['category', 'Kategori'],
+      ['requested_at', 'Diajukan'],
+      ['loan_date', 'Tanggal Pinjam'],
+      ['due_date', 'Jatuh Tempo'],
+      ['return_date', 'Tanggal Kembali'],
+      ['extension_count', 'Perpanjangan'],
+      ['late_days', 'Hari Terlambat'],
+      ['fine_amount', 'Denda (Rp)'],
+      ['fine_status', 'Status Denda'],
+      ['reject_reason', 'Alasan Penolakan'],
+      ['handler', 'Petugas'],
     ],
     build({ status, fine, q, from, to }) {
       const where = [];
       const params = [];
-      if (status) { params.push(status); where.push(`l.status = $${params.length}`); }
-      if (fine) { params.push(fine); where.push(`l.fine_status = $${params.length}`); }
+      if (status) {
+        params.push(status);
+        where.push(`l.status = $${params.length}`);
+      }
+      if (fine) {
+        params.push(fine);
+        where.push(`l.fine_status = $${params.length}`);
+      }
       if (q) {
         params.push(`%${q.toLowerCase()}%`);
-        where.push(`(LOWER(l.code) LIKE $${params.length} OR LOWER(u.full_name) LIKE $${params.length} OR u.identity_number LIKE $${params.length} OR LOWER(b.title) LIKE $${params.length})`);
+        where.push(
+          `(LOWER(l.code) LIKE $${params.length} OR LOWER(u.full_name) LIKE $${params.length} OR u.identity_number LIKE $${params.length} OR LOWER(b.title) LIKE $${params.length})`
+        );
       }
-      if (from) { params.push(from); where.push(`l.requested_at::date >= $${params.length}`); }
-      if (to) { params.push(to); where.push(`l.requested_at::date <= $${params.length}`); }
+      if (from) {
+        params.push(from);
+        where.push(`l.requested_at::date >= $${params.length}`);
+      }
+      if (to) {
+        params.push(to);
+        where.push(`l.requested_at::date <= $${params.length}`);
+      }
       return {
         sql: `SELECT l.code, l.status, u.identity_number, u.full_name, b.title, b.isbn, c.name AS category,
                      TO_CHAR(l.requested_at, 'YYYY-MM-DD HH24:MI') AS requested_at,
-                     l.loan_date, l.due_date, l.return_date, l.extension_count,
+                     TO_CHAR(l.loan_date, 'YYYY-MM-DD') AS loan_date,
+                     TO_CHAR(l.due_date, 'YYYY-MM-DD') AS due_date,
+                     TO_CHAR(l.return_date, 'YYYY-MM-DD') AS return_date,
+                     l.extension_count,
                      CASE WHEN l.due_date IS NULL THEN 0 ELSE GREATEST(COALESCE(l.return_date, CURRENT_DATE) - l.due_date, 0) END AS late_days,
                      l.fine_amount, l.fine_status, l.reject_reason, h.full_name AS handler
                 FROM v_peminjaman l
@@ -70,24 +132,46 @@ const REPORTS = {
   denda: {
     title: 'rekap-denda',
     headers: [
-      ['code', 'Kode Transaksi'], ['identity_number', 'NIM'], ['full_name', 'Nama Mahasiswa'], ['title', 'Judul Buku'],
-      ['due_date', 'Jatuh Tempo'], ['return_date', 'Tanggal Kembali'], ['late_days', 'Hari Terlambat'],
-      ['daily_rate', 'Tarif/Hari (Rp)'], ['amount', 'Jumlah Denda (Rp)'], ['status', 'Status'],
-      ['recorded_at', 'Dicatat'], ['paid_at', 'Dibayar'], ['receiver', 'Diterima Oleh'],
+      ['code', 'Kode Transaksi'],
+      ['identity_number', 'NIM'],
+      ['full_name', 'Nama Mahasiswa'],
+      ['title', 'Judul Buku'],
+      ['due_date', 'Jatuh Tempo'],
+      ['return_date', 'Tanggal Kembali'],
+      ['late_days', 'Hari Terlambat'],
+      ['daily_rate', 'Tarif/Hari (Rp)'],
+      ['amount', 'Jumlah Denda (Rp)'],
+      ['status', 'Status'],
+      ['recorded_at', 'Dicatat'],
+      ['paid_at', 'Dibayar'],
+      ['receiver', 'Diterima Oleh'],
     ],
     build({ fine, q, from, to }) {
       const where = [];
       const params = [];
-      if (fine) { params.push(fine); where.push(`d.status_pembayaran = $${params.length}`); }
+      if (fine) {
+        params.push(fine);
+        where.push(`d.status_pembayaran = $${params.length}`);
+      }
       if (q) {
         params.push(`%${q.toLowerCase()}%`);
-        where.push(`(LOWER(p.kode_transaksi) LIKE $${params.length} OR LOWER(u.nama_lengkap) LIKE $${params.length} OR u.nomor_identitas LIKE $${params.length} OR LOWER(b.judul) LIKE $${params.length})`);
+        where.push(
+          `(LOWER(p.kode_transaksi) LIKE $${params.length} OR LOWER(u.nama_lengkap) LIKE $${params.length} OR u.nomor_identitas LIKE $${params.length} OR LOWER(b.judul) LIKE $${params.length})`
+        );
       }
-      if (from) { params.push(from); where.push(`d.dibuat_pada::date >= $${params.length}`); }
-      if (to) { params.push(to); where.push(`d.dibuat_pada::date <= $${params.length}`); }
+      if (from) {
+        params.push(from);
+        where.push(`d.dibuat_pada::date >= $${params.length}`);
+      }
+      if (to) {
+        params.push(to);
+        where.push(`d.dibuat_pada::date <= $${params.length}`);
+      }
       return {
         sql: `SELECT p.kode_transaksi AS code, u.nomor_identitas AS identity_number, u.nama_lengkap AS full_name, b.judul AS title,
-                     p.tanggal_jatuh_tempo AS due_date, p.tanggal_kembali AS return_date, d.hari_terlambat AS late_days,
+                     TO_CHAR(p.tanggal_jatuh_tempo, 'YYYY-MM-DD') AS due_date,
+                     TO_CHAR(p.tanggal_kembali, 'YYYY-MM-DD') AS return_date,
+                     d.hari_terlambat AS late_days,
                      d.tarif_per_hari AS daily_rate, d.jumlah_denda AS amount, d.status_pembayaran AS status,
                      TO_CHAR(d.dibuat_pada, 'YYYY-MM-DD HH24:MI') AS recorded_at,
                      TO_CHAR(d.dibayar_pada, 'YYYY-MM-DD HH24:MI') AS paid_at, r.nama_lengkap AS receiver
@@ -105,8 +189,13 @@ const REPORTS = {
   rekap: {
     title: 'rekap-bulanan',
     headers: [
-      ['month', 'Bulan'], ['requests', 'Pengajuan'], ['approved', 'Disetujui'], ['rejected', 'Ditolak'],
-      ['returned', 'Dikembalikan'], ['fines_recorded', 'Denda Tercatat (Rp)'], ['fines_paid', 'Denda Lunas (Rp)'],
+      ['month', 'Bulan'],
+      ['requests', 'Pengajuan'],
+      ['approved', 'Disetujui'],
+      ['rejected', 'Ditolak'],
+      ['returned', 'Dikembalikan'],
+      ['fines_recorded', 'Denda Tercatat (Rp)'],
+      ['fines_paid', 'Denda Lunas (Rp)'],
       ['fines_outstanding', 'Denda Tertunggak (Rp)'],
     ],
     build({ from, to }) {
@@ -138,7 +227,11 @@ export const GET = handle(async (request) => {
   const sp = request.nextUrl.searchParams;
   const jenis = sp.get('jenis') || 'transaksi';
   const report = REPORTS[jenis];
-  if (!report) return apiError(422, 'Jenis laporan harus transaksi, denda, atau rekap.', { jenis: 'Jenis tidak dikenal.' });
+  if (!report) {
+    return apiError(422, 'Jenis laporan harus transaksi, denda, atau rekap.', {
+      jenis: 'Jenis tidak dikenal.',
+    });
+  }
 
   const filters = {
     status: STATUSES.includes(sp.get('status')) ? sp.get('status') : '',
@@ -147,11 +240,20 @@ export const GET = handle(async (request) => {
     from: sp.get('dari') || '',
     to: sp.get('sampai') || '',
   };
+
   const errors = {};
-  if (filters.from && !validDate(filters.from)) errors.dari = 'Format tanggal harus YYYY-MM-DD.';
-  if (filters.to && !validDate(filters.to)) errors.sampai = 'Format tanggal harus YYYY-MM-DD.';
-  if (!errors.dari && !errors.sampai && filters.from && filters.to && filters.from > filters.to) errors.sampai = 'Tanggal akhir harus setelah tanggal awal.';
-  if (Object.keys(errors).length) return apiError(422, 'Periksa kembali filter tanggal.', errors);
+  if (filters.from && !validDate(filters.from)) {
+    errors.dari = 'Format tanggal harus YYYY-MM-DD.';
+  }
+  if (filters.to && !validDate(filters.to)) {
+    errors.sampai = 'Format tanggal harus YYYY-MM-DD.';
+  }
+  if (!errors.dari && !errors.sampai && filters.from && filters.to && filters.from > filters.to) {
+    errors.sampai = 'Tanggal akhir harus setelah tanggal awal.';
+  }
+  if (Object.keys(errors).length) {
+    return apiError(422, 'Periksa kembali filter tanggal.', errors);
+  }
 
   const { sql, params } = report.build(filters);
   const rows = await query(sql, params);

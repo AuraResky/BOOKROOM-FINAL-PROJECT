@@ -14,7 +14,6 @@ const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'O
 export default async function AdminDashboard() {
   await requireRole('admin');
 
-  // Kueri agregasi multi-tabel: books, loans, users
   const stats = await one(`
     WITH b AS (SELECT COUNT(*)::int AS titles, COALESCE(SUM(stock),0)::int AS on_shelf FROM v_buku),
          l AS (SELECT COUNT(*) FILTER (WHERE status IN ${ACTIVE})::int AS active_loans,
@@ -56,9 +55,8 @@ export default async function AdminDashboard() {
       <PageHeader eyebrow="Admin" title="Dashboard Statistik"
         description="Ringkasan agregat koleksi, keanggotaan, sirkulasi, dan denda perpustakaan."
         actions={<>
-          <a href="/api/admin/ekspor?jenis=transaksi" className="btn-outline btn-sm" download>Unduh Transaksi (CSV)</a>
-          <a href="/api/admin/ekspor?jenis=denda" className="btn-outline btn-sm" download>Rekap Denda (CSV)</a>
-          <a href="/api/admin/ekspor?jenis=rekap" className="btn-primary btn-sm" download>Rekap Bulanan (CSV)</a>
+          <a href="/api/admin/ekspor?jenis=transaksi" className="btn-outline btn-sm" download>Unduh Riwayat Peminjaman (CSV)</a>
+          <a href="/api/admin/ekspor?jenis=rekap" className="btn-primary btn-sm" download>Unduh Rekap Bulanan (CSV)</a>
         </>} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
