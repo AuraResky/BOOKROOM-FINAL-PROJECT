@@ -49,8 +49,6 @@ export default function CatalogFilters({ categories, sortOptions, canManage }) {
           </button>
         )}
       </form>
-      <PillSelect icon={IconTag} label="Kategori" value={params.get('kategori') || ''} onChange={(v) => push({ kategori: v })}
-        options={[{ value: '', label: 'Kategori' }, ...categories.map((c) => ({ value: c.code, label: `${c.name} (${c.book_count})` }))]} />
       <PillSelect icon={IconLayers} label="Ketersediaan" value={params.get('status') || ''} onChange={(v) => push({ status: v })}
         options={[{ value: '', label: 'Ketersediaan' }, { value: 'tersedia', label: 'Tersedia' }, { value: 'dipinjam', label: 'Sedang dipinjam' }]} />
       <PillSelect icon={IconSort} label="Urutkan" value={params.get('sort') || ''} onChange={(v) => push({ sort: v })}

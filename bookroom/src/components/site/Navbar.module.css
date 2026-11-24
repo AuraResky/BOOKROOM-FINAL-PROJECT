@@ -240,25 +240,33 @@
 .backdrop {
   display: block;
   position: fixed;
-  inset: 72px 0 0;
+  top: 72px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
   z-index: 61;
   border: 0;
-  background: #10243f55;
+  background: rgba(16, 36, 63, 0.55);
 }
 
 .mobile {
   display: flex;
   position: fixed;
-  inset: 72px 0 auto;
+  top: 72px;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 62;
   max-height: calc(100dvh - 72px);
   overflow-y: auto;
   flex-direction: column;
   gap: 5px;
   padding: 14px;
+  box-sizing: border-box;
   background: #153454;
   border-bottom: 1px solid #355474;
-  box-shadow: 0 12px 24px #10243f30;
+  box-shadow: 0 12px 24px rgba(16, 36, 63, 0.35);
   font-family: var(--font-jakarta), sans-serif;
 }
 
@@ -342,7 +350,95 @@
   }
 
   .search,
-  .chevron,
+
+  .profileWrap {
+  position: relative;
+}
+
+.profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  transition: transform 180ms ease-out;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.profileDropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 70;
+  min-width: 200px;
+  padding: 6px;
+  border: 1px solid #e2ded5;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #153454;
+  box-shadow: 0 12px 28px rgba(16, 36, 63, 0.18);
+}
+
+.profileHeader {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #ece9e1;
+}
+
+.profileHeader strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #153454;
+}
+
+.profileHeader small {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #153454;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.dropdownItem:hover {
+  background: #f4f3ef;
+}
+
+.dropdownLogout {
+  color: #dc2626;
+}
+
+.dropdownLogout:hover {
+  background: #fef2f2;
+}
   .actions .signup {
     display: none;
   }
@@ -363,7 +459,7 @@
     display: grid;
   }
 
-  .backdrop {
+.backdrop {
     top: 64px;
   }
 

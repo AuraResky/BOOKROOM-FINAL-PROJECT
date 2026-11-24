@@ -1,13 +1,11 @@
 'use client';
 
-// Lonceng, jumlah pesan baru dan daftar notifikasi
-
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { IconBell } from '@/components/ui/Icons';
 import { timeAgo } from '@/lib/format';
 
-// Lonceng notifikasi navbar mahasiswa.
+// Lonceng notifikasi navbar mahasiswa
 
 export default function NotificationBell({ initialUnread = 0 }) {
   const [open, setOpen] = useState(false);
@@ -80,16 +78,21 @@ export default function NotificationBell({ initialUnread = 0 }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 z-[70] w-[min(360px,calc(100vw-24px))] animate-fadein overflow-hidden rounded-xl border border-line bg-white text-ink shadow-lift">
+        <div className="fixed inset-x-3 top-16 z-50 overflow-hidden rounded-xl border border-[#e2ded5] bg-white text-[#153454] shadow-xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-[calc(100%+10px)] sm:w-80">
           <div className="flex items-center justify-between border-b border-line px-4 py-3">
             <p className="text-sm font-bold text-navy">Notifikasi</p>
             {unread > 0 && (
-              <button type="button" onClick={markAll} className="text-xs font-semibold text-navy underline-offset-4 hover:underline">
+              <button
+                type="button"
+                onClick={markAll}
+                className="text-xs font-semibold text-navy underline-offset-4 hover:underline"
+              >
                 Tandai semua dibaca
               </button>
             )}
           </div>
-          <div className="max-h-[380px] overflow-y-auto">
+
+          <div className="max-h-80 overflow-y-auto">
             {error && <p className="px-4 py-6 text-center text-sm text-danger">{error}</p>}
             {!error && items === null && <p className="px-4 py-6 text-center text-sm text-ink-muted">Memuat…</p>}
             {!error && items?.length === 0 && <p className="px-4 py-6 text-center text-sm text-ink-muted">Belum ada notifikasi.</p>}
@@ -97,7 +100,11 @@ export default function NotificationBell({ initialUnread = 0 }) {
               <ul className="divide-y divide-line">
                 {items.map((n) => (
                   <li key={n.id} className={n.is_read ? '' : 'bg-sun-soft/60'}>
-                    <Link href={n.link || '/mahasiswa'} onClick={() => setOpen(false)} className="block px-4 py-3 hover:bg-canvas">
+                    <Link
+                      href={n.link || '/mahasiswa'}
+                      onClick={() => setOpen(false)}
+                      className="block px-4 py-3 hover:bg-canvas"
+                    >
                       <div className="flex items-start justify-between gap-2">
                         <p className="text-sm font-semibold leading-snug text-navy">{n.title}</p>
                         {!n.is_read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-gold" aria-label="Belum dibaca" />}
@@ -110,7 +117,12 @@ export default function NotificationBell({ initialUnread = 0 }) {
               </ul>
             )}
           </div>
-          <Link href="/mahasiswa#notifikasi" onClick={() => setOpen(false)} className="block border-t border-line px-4 py-2.5 text-center text-xs font-semibold text-navy hover:bg-canvas">
+
+          <Link
+            href="/mahasiswa#notifikasi"
+            onClick={() => setOpen(false)}
+            className="block border-t border-line px-4 py-2.5 text-center text-xs font-semibold text-navy hover:bg-canvas"
+          >
             Lihat semua di dashboard
           </Link>
         </div>

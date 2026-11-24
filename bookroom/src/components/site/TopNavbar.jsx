@@ -4,11 +4,11 @@ import Link from 'next/link';
 import {
   LogoMark,
   IconSearch,
-  IconChevron,
 } from '@/components/ui/Icons';
 
 import { initials } from '@/lib/format';
 import NavLinks from './NavLinks';
+import ProfileMenu from './ProfileMenu';
 import NotificationBell from '@/components/student/NotificationBell';
 import styles from './Navbar.module.css';
 
@@ -103,17 +103,10 @@ export default function TopNavbar({
           {member && <NotificationBell initialUnread={unreadCount} />}
 
           {member ? (
-            <Link
-              href="/mahasiswa/profil"
-              className={styles.profile}
-              aria-label="Profil Mahasiswa"
-            >
-              <span className={styles.avatar}>
-                {initials(user.full_name)}
-              </span>
-
-              <IconChevron className={styles.chevron} />
-            </Link>
+            <ProfileMenu
+              user={user}
+              label={initials(user.full_name)}
+            />
           ) : (
             <>
               <Link

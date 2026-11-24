@@ -1,4 +1,4 @@
-// Isi kebijakan dan informasi layanan perpustakaan.
+// Isi kebijakan dan informasi layanan perpustakaan
 import Link from 'next/link';
 import {
   IconArrowRight,
@@ -25,10 +25,12 @@ export default function ServiceContent({
             <div>
               <h2>{service.title}</h2>
               <p>{service.text}</p>
-              <Link href={service.href}>
-                Lihat informasi
-                <IconArrowRight className="h-4 w-4" />
-              </Link>
+              {service.href && (
+                <Link href={service.href}>
+                  {service.cta || 'Lihat informasi'}
+                  <IconArrowRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
           </article>
         ))}

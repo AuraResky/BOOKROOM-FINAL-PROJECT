@@ -1,8 +1,6 @@
-// Bagian pembuka beranda dan pencarian buku
 import Link from 'next/link';
 import QuickSearch from './QuickSearch';
 import CuratedBoard from './CuratedBoard';
-import { IconBooks } from '@/components/ui/Icons';
 
 export default function Hero({ books = [], categories = [] }) {
   const preferred = [/komputer|informasi|teknologi/i, /sastra|fiksi|humaniora/i, /manajemen|bisnis/i];
@@ -19,9 +17,8 @@ export default function Hero({ books = [], categories = [] }) {
     <section className="curated-hero-shell">
       <div className="curated-hero">
         <div className="curated-hero-copy">
-          <span className="curated-eyebrow"><IconBooks className="h-4 w-4" /> KOLEKSI KURASI • BOOKROOM</span>
-          <h1>Temukan referensi.<span>Perluas perspektif.</span></h1>
-          <p>Akses koleksi lintas disiplin, perkaya perspektif, dan temukan referensi untuk langkah akademik berikutnya.</p>
+          <h1>Satu ruang baca.<span>Untuk setiap rasa ingin tahu</span></h1>
+          <p>Jelajahi halaman penuh gagasan, temukan bacaan yang menginspirasi, dan bawa pulang buku pilihanmu dengan mudah</p>
           <QuickSearch />
           <div className="curated-quickfilters"><span>Jelajahi:</span>{selected.map((category) => <Link href={`/katalog?kategori=${encodeURIComponent(category.code)}`} key={category.id}>{category.name}</Link>)}<Link href="/katalog?sort=terbaru">Koleksi Terbaru</Link></div>
         </div>

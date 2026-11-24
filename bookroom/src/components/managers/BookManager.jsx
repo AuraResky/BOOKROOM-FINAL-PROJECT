@@ -228,7 +228,7 @@ function BookForm({ book, categories, onDone }) {
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-[1fr_160px]">
+        <div>
           <label className="block text-sm font-medium text-ink">
             Unggah sampul buku
 
@@ -267,13 +267,6 @@ function BookForm({ book, categories, onDone }) {
             )}
           </label>
 
-          <TextInput
-            label="Lokasi rak"
-            name="shelf_location"
-            defaultValue={book?.shelf_location || ''}
-            inputClassName="font-mono"
-            placeholder="A1-005.1 MAR"
-          />
         </div>
 
         <TextArea
