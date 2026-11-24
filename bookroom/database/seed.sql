@@ -9,13 +9,13 @@ VALUES
     (1, 'Dr. Ratna Kusumawa, S.IP., M.Hum.', 'ratna.kusuma@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'admin', '198203152008012004', '081241550912', NULL, TRUE, (CURRENT_DATE + INTERVAL '-400 days' + TIME '14:33:58')),
     (2, 'Budi dirgantara, A.Md.', 'budi.dirga@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'pegawai', '199006122015041001', '085256781203', NULL, TRUE, (CURRENT_DATE + INTERVAL '-390 days' + TIME '14:33:58')),
     (3, 'Sri ayu, S.IIP.', 'sri.ayu@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'pegawai', '199211082019032010', '081355420876', NULL, TRUE, (CURRENT_DATE + INTERVAL '-300 days' + TIME '14:33:58')),
-    (4, 'Andi Muslimah', 'andi.muslimah@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', '2201010045', '082291104587', 'S1 Teknik Informatika', TRUE, (CURRENT_DATE + INTERVAL '-260 days' + TIME '14:33:58')),
-    (5, 'Aura Resky Ramadhani', 'aura@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', '2201020078', '085342218890', 'S1 Psikologi', TRUE, (CURRENT_DATE + INTERVAL '-250 days' + TIME '14:33:58')),
-    (6, 'Mawaddah Fajri', 'mawaddah@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', '2101030112', '081198764420', 'S1 Sistem Informasi', TRUE, (CURRENT_DATE + INTERVAL '-380 days' + TIME '14:33:58')),
-    (7, 'Anita Aminarti', 'nita@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', '2301010021', '087754230019', 'S1 Desain Komunikasi Visual', TRUE, (CURRENT_DATE + INTERVAL '-200 days' + TIME '14:33:58')),
-    (8, 'Aliyah Fitraturramadhani', 'aliyah@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', '2201040056', '081343987215', 'S1 Teknik Informatika', TRUE, (CURRENT_DATE + INTERVAL '-240 days' + TIME '14:33:58')),
-    (9, 'Salwa Ainiyyah', 'salwa@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', '2301020033', '082187650034', 'S1 Manajemen', TRUE, (CURRENT_DATE + INTERVAL '-190 days' + TIME '14:33:58')),
-    (10, 'Nafisah Nailal', 'visya@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', '1901010099', '081245671188', 'S1 Sistem Informasi', FALSE, (CURRENT_DATE + INTERVAL '-900 days' + TIME '14:33:58'));
+    (4, 'Andi Talistah', 'talista@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', 'I201010045', '082291104587', 'S1 Teknik Informatika', TRUE, (CURRENT_DATE + INTERVAL '-260 days' + TIME '14:33:58')),
+    (5, 'Aura Resky Ramadhani', 'aura@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', 'P201020078', '085342218890', 'S1 Psikologi', TRUE, (CURRENT_DATE + INTERVAL '-250 days' + TIME '14:33:58')),
+    (6, 'Mawaddah Fajri', 'mawaddah@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', 'H101030112', '081198764420', 'S1 Sistem Informasi', TRUE, (CURRENT_DATE + INTERVAL '-380 days' + TIME '14:33:58')),
+    (7, 'Anita Aminarti', 'nita@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', 'D301010021', '087754230019', 'S1 Desain Komunikasi Visual', TRUE, (CURRENT_DATE + INTERVAL '-200 days' + TIME '14:33:58')),
+    (8, 'Aliyah Fitraturramadhani', 'aliyah@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', 'A201040056', '081343987215', 'S1 Teknik Informatika', TRUE, (CURRENT_DATE + INTERVAL '-240 days' + TIME '14:33:58')),
+    (9, 'Salwa Ainiyyah', 'salwa@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', 'B301020033', '082187650034', 'S1 Manajemen', TRUE, (CURRENT_DATE + INTERVAL '-190 days' + TIME '14:33:58')),
+    (10, 'Nafisah Nailal', 'visya@unhas.ac.id', 'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7', 'mahasiswa', 'H901010099', '081245671188', 'S1 Sistem Informasi', FALSE, (CURRENT_DATE + INTERVAL '-900 days' + TIME '14:33:58'));
 
 INSERT INTO kategori_buku (
     id, nama_kategori, kode_klasifikasi, deskripsi
@@ -34,33 +34,59 @@ VALUES
     (11, 'Sejarah Dunia', '909', 'Sejarah dunia dan peradaban manusia.'),
     (12, 'Biografi Umum', '920', 'Biografi umum, autobiografi, dan memoar.');
 
+INSERT INTO gambar (
+    id, nama_file, nama_asli, jenis_file, ukuran_byte, lokasi_file, diunggah_oleh
+)
+VALUES
+    (1, '594e17cf-3b55-4967-a759-d6953649e13c.webp', 'code complete (2nd ed.).webp', 'image/webp', 91766, '/uploads/sampul-buku/594e17cf-3b55-4967-a759-d6953649e13c.webp', 2),
+    (2, '737cbc7b-f7a0-4141-a500-c23121d6d7c3.webp', 'design patterns.webp', 'image/webp', 68938, '/uploads/sampul-buku/737cbc7b-f7a0-4141-a500-c23121d6d7c3.webp', 2),
+    (3, '7fbcbc7a-8947-43f4-8c67-c274cd9ab414.webp', 'introduction to algorithms (3rd ed.).webp', 'image/webp', 33624, '/uploads/sampul-buku/7fbcbc7a-8947-43f4-8c67-c274cd9ab414.webp', 2),
+    (4, '409ceb2f-342b-446c-8e47-99b19ae7b83d.webp', 'refactoring (2nd ed.).webp', 'image/webp', 79440, '/uploads/sampul-buku/409ceb2f-342b-446c-8e47-99b19ae7b83d.webp', 2),
+    (5, '1657b444-e7ec-415c-b1ca-8e9359f3ae56.webp', 'the pragmatic programmer (20th anniv.).webp', 'image/webp', 312700, '/uploads/sampul-buku/1657b444-e7ec-415c-b1ca-8e9359f3ae56.webp', 2),
+    (6, 'c3c0e5bf-3831-4ce7-a7f1-d5941ece5026.webp', 'clean code.webp', 'image/webp', 58738, '/uploads/sampul-buku/c3c0e5bf-3831-4ce7-a7f1-d5941ece5026.webp', 2),
+    (7, '8920b490-5919-471c-9e4f-696ce37218fc.webp', 'man''s search for meaning.webp', 'image/webp', 229674, '/uploads/sampul-buku/8920b490-5919-471c-9e4f-696ce37218fc.webp', 2),
+    (8, '26e06934-cb02-4fe0-911d-1f03a6fd5935.webp', 'grit.webp', 'image/webp', 49680, '/uploads/sampul-buku/26e06934-cb02-4fe0-911d-1f03a6fd5935.webp', 2),
+    (9, '242ad30e-8cdf-4d3f-a416-ffdecc5c2cd6.webp', 'thinking, fast and slow.webp', 'image/webp', 61994, '/uploads/sampul-buku/242ad30e-8cdf-4d3f-a416-ffdecc5c2cd6.webp', 2),
+    (10, '3c9d984c-bd19-4fc3-b916-42d2774540fc.webp', 'deep work.webp', 'image/webp', 107746, '/uploads/sampul-buku/3c9d984c-bd19-4fc3-b916-42d2774540fc.webp', 2),
+    (11, '6d3f8fa5-229f-451c-a5fc-2ef43c0be2f4.webp', 'atomic habits.webp', 'image/webp', 151846, '/uploads/sampul-buku/6d3f8fa5-229f-451c-a5fc-2ef43c0be2f4.webp', 2),
+    (12, '1b10fc13-a9d8-47fb-b1a1-56861bc9eefd.webp', 'hooked: how to build habit-forming products.webp', 'image/webp', 74432, '/uploads/sampul-buku/1b10fc13-a9d8-47fb-b1a1-56861bc9eefd.webp', 2),
+    (13, 'e4e6b327-02dc-48f9-85d6-4f45e0ac5c1b.webp', 'don''t make me think, revisited.webp', 'image/webp', 55176, '/uploads/sampul-buku/e4e6b327-02dc-48f9-85d6-4f45e0ac5c1b.webp', 2),
+    (14, 'b7002633-4a6b-4350-99d6-36db3ff156ab.webp', 'the design of everyday things.webp', 'image/webp', 55460, '/uploads/sampul-buku/b7002633-4a6b-4350-99d6-36db3ff156ab.webp', 2),
+    (15, '3a6bf3e5-7632-4dce-adb6-f626785ecff1.webp', 'zero to one.webp', 'image/webp', 41960, '/uploads/sampul-buku/3a6bf3e5-7632-4dce-adb6-f626785ecff1.webp', 2),
+    (16, 'cb15f191-3335-44f9-9568-900bcd30d72e.webp', 'the lean startup.webp', 'image/webp', 115498, '/uploads/sampul-buku/cb15f191-3335-44f9-9568-900bcd30d72e.webp', 2),
+    (17, 'c25eae43-3c0e-4df8-93df-9695f66a766a.webp', 'the psychology of money.webp', 'image/webp', 91930, '/uploads/sampul-buku/c25eae43-3c0e-4df8-93df-9695f66a766a.webp', 2),
+    (18, '9c93dce0-6c47-48db-ad66-30aa0f026d3b.webp', 'a brief history of time.webp', 'image/webp', 108198, '/uploads/sampul-buku/9c93dce0-6c47-48db-ad66-30aa0f026d3b.webp', 2),
+    (19, '7dd4109d-41c4-4642-b9e3-002defdd9281.webp', 'cosmos.webp', 'image/webp', 85078, '/uploads/sampul-buku/7dd4109d-41c4-4642-b9e3-002defdd9281.webp', 2),
+    (20, '6fa6bf6a-9baf-484d-a1ab-acc8e7e318aa.webp', 'educated.webp', 'image/webp', 94116, '/uploads/sampul-buku/6fa6bf6a-9baf-484d-a1ab-acc8e7e318aa.webp', 2),
+    (21, '2e3ec6b7-ec4b-4f86-be38-7dd229cf19e9.webp', 'sapiens.webp', 'image/webp', 58998, '/uploads/sampul-buku/2e3ec6b7-ec4b-4f86-be38-7dd229cf19e9.webp', 2);
+
 INSERT INTO buku (
     id, judul, isbn, penulis, penerbit, tahun_terbit, id_kategori,
     stok_total, stok_tersedia, batas_hari_pinjam, denda_per_hari,
-    sinopsis, lokasi_rak
+    id_gambar_sampul, sinopsis
 )
 VALUES
-    (1, 'Code Complete (2nd ed.)', '9780735619678', 'Steve McConnell', 'Microsoft Press', 2004, 1, 2, 2, 14, 2000, 'Panduan praktis konstruksi perangkat lunak: perancangan, penulisan rutin, pengujian, dan debugging.', 'A2-005.1 MCC'),
-    (2, 'Design Patterns', '9780201633610', 'Erich Gamma et al.', 'Addison-Wesley', 1994, 1, 2, 2, 14, 2000, 'Dua puluh tiga pola desain berorientasi objek klasik dari "Gang of Four" beserta konteks penerapannya.', 'A2-005.1 GAM'),
-    (3, 'Introduction to Algorithms (3rd ed.)', '9780262033848', 'Thomas H. Cormen et al.', 'MIT Press', 2009, 1, 3, 2, 14, 2000, 'Buku referensi utama mata kuliah Algoritma dan Struktur Data: analisis kompleksitas, graf, pemrograman dinamis, dan lainnya.', 'A2-005.1 COR'),
-    (4, 'Refactoring (2nd ed.)', '9780134757599', 'Martin Fowler', 'Addison-Wesley', 2018, 1, 2, 1, 14, 2000, 'Katalog teknik refaktor dengan contoh JavaScript untuk memperbaiki desain kode tanpa mengubah perilakunya.', 'A1-005.1 FOW'),
-    (5, 'The Pragmatic Programmer (20th Anniv.)', '9780135957059', 'David Thomas & Andrew Hunt', 'Addison-Wesley', 2019, 1, 2, 2, 14, 2000, 'Kumpulan praktik dan cara berpikir pengembang perangkat lunak profesional, dari prinsip DRY hingga estimasi dan otomasi.', 'A1-005.1 THO'),
-    (6, 'Clean Code', '9780132350884', 'Robert C. Martin', 'Prentice Hall', 2008, 1, 3, 3, 14, 2000, 'Panduan menulis kode yang mudah dibaca, diuji, dan dirawat: penamaan, fungsi, komentar, penanganan galat, hingga refaktor bertahap.', 'A1-005.1 MAR'),
-    (7, 'Man''s Search for Meaning', '9780807014271', 'Viktor E. Frankl', 'Beacon Press', 2006, 3, 2, 2, 14, 1000, 'Memoar dan dasar logoterapi dari pengalaman penulis di kamp konsentrasi tentang makna hidup.', 'C1-150 FRA'),
-    (8, 'Grit', '9781501111112', 'Angela Duckworth', 'Scribner', 2016, 5, 2, 1, 14, 1000, 'Riset tentang ketekunan dan gairah jangka panjang sebagai penentu keberhasilan, melampaui bakat semata.', 'C2-158 DUC'),
-    (9, 'Thinking, Fast and Slow', '9780374533557', 'Daniel Kahneman', 'Farrar, Straus and Giroux', 2011, 4, 3, 3, 14, 1500, 'Penjelasan dua sistem berpikir manusia dan bias kognitif yang memengaruhi penilaian serta keputusan.', 'C1-153 KAH'),
-    (10, 'Deep Work', '9781455586691', 'Cal Newport', 'Grand Central Publishing', 2016, 5, 3, 3, 7, 1000, 'Strategi melatih fokus mendalam untuk menghasilkan karya bernilai tinggi di tengah distraksi digital.', 'C2-158 NEW'),
-    (11, 'Atomic Habits', '9786021637517', 'James Clear', 'Avery', 2018, 5, 5, 4, 7, 1000, 'Kerangka praktis membangun kebiasaan baik dan menghentikan kebiasaan buruk melalui perubahan kecil yang konsisten.', 'C2-158 CLE'),
-    (12, 'Hooked: How to Build Habit-Forming Products', '9781591847786', 'Nir Eyal', 'Portfolio', 2014, 9, 2, 1, 7, 1500, 'Model Hook (pemicu, aksi, imbalan, investasi) untuk memahami produk digital yang membentuk kebiasaan.', 'D1-658 EYA'),
-    (13, 'Don''t Make Me Think, Revisited', '9780321965516', 'Steve Krug', 'New Riders', 2014, 2, 2, 1, 7, 1500, 'Pendekatan akal sehat terhadap kegunaan web dan seluler, lengkap dengan panduan uji kegunaan sederhana.', 'A3-006 KRU'),
-    (14, 'The Design of Everyday Things', '9780465050659', 'Don Norman', 'Basic Books', 2013, 10, 3, 3, 14, 1500, 'Dasar desain berpusat pada manusia: affordance, signifier, umpan balik, dan mengapa banyak benda sehari-hari membingungkan.', 'B1-745 NOR'),
-    (15, 'Zero to One', '9780804139298', 'Peter Thiel & Blake Masters', 'Crown Business', 2014, 9, 2, 1, 7, 1000, 'Pemikiran tentang inovasi, monopoli kreatif, dan membangun perusahaan yang menciptakan hal baru.', 'D1-658 THI'),
-    (16, 'The Lean Startup', '9780307887894', 'Eric Ries', 'Crown Business', 2011, 9, 2, 2, 14, 1000, 'Metode build–measure–learn untuk membangun usaha rintisan secara efisien melalui eksperimen tervalidasi.', 'D1-658 RIE'),
-    (17, 'The Psychology of Money', '9780857197689', 'Morgan Housel', 'Harriman House', 2020, 6, 2, 2, 7, 1000, 'Sembilan belas cerita singkat tentang perilaku manusia terhadap uang, kekayaan, dan keputusan finansial.', 'D1-332 HOU'),
-    (18, 'A Brief History of Time', '9780553380163', 'Stephen Hawking', 'Bantam', 1998, 8, 2, 2, 14, 1000, 'Pengantar kosmologi modern: Big Bang, lubang hitam, dan sifat waktu untuk pembaca umum.', 'E1-523 HAW'),
-    (19, 'Cosmos', '9780345539434', 'Carl Sagan', 'Ballantine Books', 2013, 7, 1, 0, 14, 1000, 'Perjalanan populer menyusuri sejarah sains, astronomi, dan tempat manusia di alam semesta.', 'E1-520 SAG'),
-    (20, 'Educated', '9780399590504', 'Tara Westover', 'Random House', 2018, 12, 1, 1, 14, 1000, 'Memoar perjalanan seorang perempuan dari keluarga terisolasi di Idaho hingga meraih gelar doktor di Cambridge.', 'F1-920 WES'),
-    (21, 'Sapiens', '9780062316097', 'Yuval Noah Harari', 'Harper', 2015, 11, 2, 2, 14, 1000, 'Sejarah umat manusia dari revolusi kognitif, pertanian, hingga revolusi sains.', 'F1-909 HAR');
+    (1, 'Code Complete (2nd ed.)', '9780735619678', 'Steve McConnell', 'Microsoft Press', 2004, 1, 2, 2, 14, 2000, 1, 'Panduan praktis konstruksi perangkat lunak: perancangan, penulisan rutin, pengujian, dan debugging.'),
+    (2, 'Design Patterns', '9780201633610', 'Erich Gamma et al.', 'Addison-Wesley', 1994, 1, 2, 2, 14, 2000, 2, 'Dua puluh tiga pola desain berorientasi objek klasik dari "Gang of Four" beserta konteks penerapannya.'),
+    (3, 'Introduction to Algorithms (3rd ed.)', '9780262033848', 'Thomas H. Cormen et al.', 'MIT Press', 2009, 1, 3, 2, 14, 2000, 3, 'Buku referensi utama mata kuliah Algoritma dan Struktur Data: analisis kompleksitas, graf, pemrograman dinamis, dan lainnya.'),
+    (4, 'Refactoring (2nd ed.)', '9780134757599', 'Martin Fowler', 'Addison-Wesley', 2018, 1, 2, 1, 14, 2000, 4, 'Katalog teknik refaktor dengan contoh JavaScript untuk memperbaiki desain kode tanpa mengubah perilakunya.'),
+    (5, 'The Pragmatic Programmer (20th Anniv.)', '9780135957059', 'David Thomas & Andrew Hunt', 'Addison-Wesley', 2019, 1, 2, 2, 14, 2000, 5, 'Kumpulan praktik dan cara berpikir pengembang perangkat lunak profesional, dari prinsip DRY hingga estimasi dan otomasi.'),
+    (6, 'Clean Code', '9780132350884', 'Robert C. Martin', 'Prentice Hall', 2008, 1, 3, 3, 14, 2000, 6, 'Panduan menulis kode yang mudah dibaca, diuji, dan dirawat: penamaan, fungsi, komentar, penanganan galat, hingga refaktor bertahap.'),
+    (7, 'Man''s Search for Meaning', '9780807014271', 'Viktor E. Frankl', 'Beacon Press', 2006, 3, 2, 2, 14, 1000, 7, 'Memoar dan dasar logoterapi dari pengalaman penulis di kamp konsentrasi tentang makna hidup.'),
+    (8, 'Grit', '9781501111112', 'Angela Duckworth', 'Scribner', 2016, 5, 2, 1, 14, 1000, 8, 'Riset tentang ketekunan dan gairah jangka panjang sebagai penentu keberhasilan, melampaui bakat semata.'),
+    (9, 'Thinking, Fast and Slow', '9780374533557', 'Daniel Kahneman', 'Farrar, Straus and Giroux', 2011, 4, 3, 3, 14, 1500, 9, 'Penjelasan dua sistem berpikir manusia dan bias kognitif yang memengaruhi penilaian serta keputusan.'),
+    (10, 'Deep Work', '9781455586691', 'Cal Newport', 'Grand Central Publishing', 2016, 5, 3, 3, 7, 1000, 10, 'Strategi melatih fokus mendalam untuk menghasilkan karya bernilai tinggi di tengah distraksi digital.'),
+    (11, 'Atomic Habits', '9786021637517', 'James Clear', 'Avery', 2018, 5, 5, 4, 7, 1000, 11, 'Kerangka praktis membangun kebiasaan baik dan menghentikan kebiasaan buruk melalui perubahan kecil yang konsisten.'),
+    (12, 'Hooked: How to Build Habit-Forming Products', '9781591847786', 'Nir Eyal', 'Portfolio', 2014, 9, 2, 1, 7, 1500, 12, 'Model Hook (pemicu, aksi, imbalan, investasi) untuk memahami produk digital yang membentuk kebiasaan.'),
+    (13, 'Don''t Make Me Think, Revisited', '9780321965516', 'Steve Krug', 'New Riders', 2014, 2, 2, 1, 7, 1500, 13, 'Pendekatan akal sehat terhadap kegunaan web dan seluler, lengkap dengan panduan uji kegunaan sederhana.'),
+    (14, 'The Design of Everyday Things', '9780465050659', 'Don Norman', 'Basic Books', 2013, 10, 3, 3, 14, 1500, 14, 'Dasar desain berpusat pada manusia: affordance, signifier, umpan balik, dan mengapa banyak benda sehari-hari membingungkan.'),
+    (15, 'Zero to One', '9780804139298', 'Peter Thiel & Blake Masters', 'Crown Business', 2014, 9, 2, 1, 7, 1000, 15, 'Pemikiran tentang inovasi, monopoli kreatif, dan membangun perusahaan yang menciptakan hal baru.'),
+    (16, 'The Lean Startup', '9780307887894', 'Eric Ries', 'Crown Business', 2011, 9, 2, 2, 14, 1000, 16, 'Metode build–measure–learn untuk membangun usaha rintisan secara efisien melalui eksperimen tervalidasi.'),
+    (17, 'The Psychology of Money', '9780857197689', 'Morgan Housel', 'Harriman House', 2020, 6, 2, 2, 7, 1000, 17, 'Sembilan belas cerita singkat tentang perilaku manusia terhadap uang, kekayaan, dan keputusan finansial.'),
+    (18, 'A Brief History of Time', '9780553380163', 'Stephen Hawking', 'Bantam', 1998, 8, 2, 2, 14, 1000, 18, 'Pengantar kosmologi modern: Big Bang, lubang hitam, dan sifat waktu untuk pembaca umum.'),
+    (19, 'Cosmos', '9780345539434', 'Carl Sagan', 'Ballantine Books', 2013, 7, 1, 0, 14, 1000, 19, 'Perjalanan populer menyusuri sejarah sains, astronomi, dan tempat manusia di alam semesta.'),
+    (20, 'Educated', '9780399590504', 'Tara Westover', 'Random House', 2018, 12, 1, 1, 14, 1000, 20, 'Memoar perjalanan seorang perempuan dari keluarga terisolasi di Idaho hingga meraih gelar doktor di Cambridge.'),
+    (21, 'Sapiens', '9780062316097', 'Yuval Noah Harari', 'Harper', 2015, 11, 2, 2, 14, 1000, 21, 'Sejarah umat manusia dari revolusi kognitif, pertanian, hingga revolusi sains.');
 
 INSERT INTO eksemplar_buku (
     id, id_buku, kode_eksemplar, status
@@ -228,33 +254,34 @@ INSERT INTO pengumuman (
     dibuat_pada
 )
 VALUES
-    (1, 'Pemeliharaan Sistem Katalog Daring', 'Sistem katalog daring BookRoom akan menjalani pemeliharaan terjadwal pada Minggu, 16 November 2026 pukul 00.00–04.00 WITA. Selama periode tersebut pengajuan peminjaman dan perpanjangan tidak dapat diproses. Terima kasih atas pengertian Anda.', 'Operasional', (CURRENT_DATE + -22), 'Published', 2, (CURRENT_DATE + INTERVAL '-22 days' + TIME '08:00:00')),
-    (2, 'Penambahan Koleksi Ilmu Komputer Semester Ganjil', 'Sebanyak 48 eksemplar koleksi baru bidang rekayasa perangkat lunak, algoritma, dan desain interaksi kini tersedia di rak A1–B1.
+    (1, 'Jadwal Layanan Perpustakaan Selama Libur Semester Ganjil', 'Sehubungan dengan berakhirnya perkuliahan dan memasuki masa libur semester ganjil 2026/2027, layanan sirkulasi dan ruang baca Perpustakaan BookRoom mengalami penyesuaian jam operasional mulai Senin, 14 Desember 2026.
 
-Beberapa judul pilihan: The Pragmatic Programmer (20th Anniv.), Refactoring edisi kedua, dan Don''t Make Me Think, Revisited. Koleksi dapat diajukan pinjam melalui katalog daring BookRoom.', 'Layanan', (CURRENT_DATE + -15), 'Published', 2, (CURRENT_DATE + INTERVAL '-15 days' + TIME '08:00:00')),
-    (3, 'Perpanjangan Jam Layanan Selama Pekan Ujian Akhir Semester', 'Menyambut Ujian Akhir Semester Ganjil 2026/2027, Perpustakaan BookRoom memperpanjang jam layanan ruang baca dan sirkulasi.
+Senin–Jumat: 08.00–15.00 WITA
+Sabtu & Minggu: Tutup
 
-Senin–Jumat: 07.30–21.00 WITA
-Sabtu: 08.00–16.00 WITA
+Peminjaman buku tetap dilayani seperti biasa. Buku yang jatuh tempo pada masa libur tetap wajib dikembalikan atau diperpanjang secara daring melalui akun masing-masing.', 'Operasional', (CURRENT_DATE + -10), 'Published', 2, (CURRENT_DATE + INTERVAL '-10 days' + TIME '08:30:00')),
+    (2, 'Bedah Buku "The Psychology of Money" bersama Komunitas Literasi', 'Perpustakaan BookRoom mengundang seluruh mahasiswa untuk mengikuti diskusi bedah buku The Psychology of Money karya Morgan Housel.
 
-Layanan peminjaman dan pengembalian tetap tutup 30 menit sebelum jam operasional berakhir. Mahasiswa diwajibkan membawa Kartu Tanda Mahasiswa (KTM) aktif dan menjaga ketenangan ruang baca lantai 2.', 'Operasional', (CURRENT_DATE + -2), 'Published', 2, (CURRENT_DATE + INTERVAL '-2 days' + TIME '08:00:00')),
-    (4, 'Lomba Resensi Buku Bulan Bahasa 2026', 'Draf ketentuan lomba resensi buku dalam rangka Bulan Bahasa. Menunggu konfirmasi juri dan hadiah dari bagian kemahasiswaan.', 'Acara', (CURRENT_DATE + 0), 'Draft', 3, (CURRENT_DATE + INTERVAL '0 days' + TIME '08:00:00')),
-    (5, 'Bedah Buku "Atomic Habits" bersama Komunitas Literasi Kampus', 'Perpustakaan BookRoom bersama Komunitas Literasi Kampus mengadakan diskusi bedah buku Atomic Habits karya James Clear.
+Waktu: Jumat, 4 Desember 2026, pukul 15.30–17.30 WITA
+Tempat: Lecture Theater Lantai 2
+Narasumber: Dosen Manajemen Keuangan & Penggiat Literasi
 
-Waktu: Jumat, 28 November 2026, pukul 15.30 WITA
-Tempat: Ruang Diskusi Lantai 3
-Pembicara: Dosen Psikologi Pendidikan
+Kuota terbatas untuk 50 peserta. Pendaftaran dapat dilakukan di meja informasi sirkulasi. Peserta hadir mendapatkan e-sertifikat dan voucher prioritas peminjaman koleksi baru.', 'Acara', (CURRENT_DATE + -6), 'Published', 3, (CURRENT_DATE + INTERVAL '-6 days' + TIME '09:15:00')),
+    (3, 'Layanan Bebas Pustaka Periode Wisuda Akhir Tahun', 'Pengajuan surat keterangan bebas pustaka bagi mahasiswa tingkat akhir yang telah menyelesaikan ujian skripsi dibuka hingga 18 Desember 2026.
 
-Kuota 60 peserta. Pendaftaran melalui meja informasi perpustakaan. Peserta mendapatkan e-sertifikat.', 'Acara', (CURRENT_DATE + -9), 'Published', 3, (CURRENT_DATE + INTERVAL '-9 days' + TIME '08:00:00')),
-    (6, 'Layanan Bebas Pustaka untuk Wisuda Periode Desember 2026', 'Pengajuan surat keterangan bebas pustaka bagi calon wisudawan periode Desember 2026 dibuka hingga 5 Desember 2026.
+Syarat pengajuan:
+1. Tidak memiliki tanggungan peminjaman buku aktif.
+2. Tidak memiliki denda keterlambatan berstatus Tertunggak.
+3. Bukti unggah karya ilmiah telah terverifikasi.
 
-Syarat:
-1. Tidak memiliki pinjaman aktif.
-2. Tidak memiliki denda berstatus Tertunggak.
-3. Telah mengunggah tugas akhir ke repositori institusi.
+Surat keterangan dapat diambil di loket administrasi maksimal dua hari kerja setelah berkas dinyatakan lengkap.', 'Layanan', (CURRENT_DATE + -4), 'Published', 2, (CURRENT_DATE + INTERVAL '-4 days' + TIME '10:00:00')),
+    (4, 'Pembaruan Fitur Reservasi Antrean Buku Koleksi Populer', 'Mahasiswa kini dapat masuk ke dalam antrean reservasi daring apabila seluruh eksemplar buku sedang dipinjam oleh anggota lain.
 
-Surat dapat diambil di meja sirkulasi dua hari kerja setelah verifikasi.', 'Layanan', (CURRENT_DATE + -6), 'Published', 3, (CURRENT_DATE + INTERVAL '-6 days' + TIME '08:00:00'));
+Begitu buku dikembalikan ke meja sirkulasi, sistem akan mengirimkan notifikasi otomatis dan menahan eksemplar tersebut selama 2 hari kerja khusus untuk pemesan urutan pertama.', 'Layanan', (CURRENT_DATE + -2), 'Published', 2, (CURRENT_DATE + INTERVAL '-2 days' + TIME '11:20:00')),
+    (5, 'Pekan Pemutihan Denda Keterlambatan Menjelang Akhir Semester', 'Dalam rangka penertiban administrasi koleksi sebelum libur semester, Perpustakaan BookRoom memberikan keringanan potongan denda keterlambatan sebesar 50% bagi mahasiswa yang mengembalikan buku melewati jatuh tempo pada periode 1–10 Desember 2026.
 
+Pengembalian dan pelunasan dilakukan langsung di meja layanan sirkulasi pada jam kerja.', 'Operasional', (CURRENT_DATE + -1), 'Published', 3, (CURRENT_DATE + INTERVAL '-1 days' + TIME '08:45:00')),
+    (6, 'Lokakarya Penulisan Esai dan Resensi Koleksi Ilmu Komputer', 'Draf rencana kegiatan pelatihan penulisan ulasan kritis buku-buku rekayasa perangkat lunak dan desain interaksi bagi mahasiswa baru. Menunggu konfirmasi jadwal narasumber dan ruang aula.', 'Acara', (CURRENT_DATE + 0), 'Draft', 3, (CURRENT_DATE + INTERVAL '0 days' + TIME '09:00:00'));
 INSERT INTO reservasi_buku (
     id, id_pengguna, id_buku, status, dibuat_pada
 )
@@ -281,6 +308,11 @@ SELECT setval(
 SELECT setval(
     pg_get_serial_sequence('kategori_buku', 'id'),
     COALESCE((SELECT MAX(id) FROM kategori_buku), 1)
+);
+
+SELECT setval(
+    pg_get_serial_sequence('gambar', 'id'),
+    COALESCE((SELECT MAX(id) FROM gambar), 1)
 );
 
 SELECT setval(
@@ -316,3 +348,61 @@ SELECT setval(
 SELECT setval('kode_peminjaman_seq', 146);
 
 COMMIT;
+
+-- Menambahkan akun contoh setiap role
+BEGIN;
+
+INSERT INTO pengguna (
+  nama_lengkap,
+  email,
+  kata_sandi_hash,
+  peran,
+  nomor_identitas,
+  program_studi,
+  aktif
+)
+VALUES
+  (
+    'Admin',
+    'admin@unhas.ac.id',
+    'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7',
+    'admin',
+    '900000000001',
+    NULL,
+    TRUE
+  ),
+  (
+    'Pegawai',
+    'pegawai@unhas.ac.id',
+    'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7',
+    'pegawai',
+    '900000000002',
+    NULL,
+    TRUE
+  ),
+  (
+    'Mahasiswa',
+    'mahasiswa@unhas.ac.id',
+    'scrypt$9a1c74e5b8d2603f17ac6492e0bd53c1$c28fe153541a83c95dae6d759116db79697177aa7621474c8a43d74906ef4a7af0a8be52e0bf3c217b4a1757f9043dc66c3445d08846f97939723b4d58587db7',
+    'mahasiswa',
+    'A000000001',
+    'S1 Informatika',
+    TRUE
+  )
+ON CONFLICT DO NOTHING;
+
+COMMIT;
+
+-- Melihat akun yang tersedia
+SELECT
+  nama_lengkap,
+  email,
+  peran,
+  nomor_identitas,
+  aktif
+FROM pengguna
+WHERE LOWER(email) IN (
+  'admin@unhas.ac.id',
+  'pegawai@unhas.ac.id',
+  'mahasiswa@unhas.ac.id'
+);

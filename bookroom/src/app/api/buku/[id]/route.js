@@ -32,7 +32,6 @@ export const GET = handle(async (_request, { params }) => {
       on_loan: book.on_loan,
       max_loan_days: book.max_loan_days,
       fine_per_day: book.fine_per_day,
-      shelf_location: book.shelf_location,
       description: book.description,
       cover_url: book.cover_url,
       avg_rating: book.avg_rating,

@@ -18,7 +18,7 @@ export default async function BooksPage() {
         JOIN v_kategori c ON c.id = b.category_id
         LEFT JOIN (SELECT book_id, AVG(rating) AS avg_rating FROM v_penilaian GROUP BY book_id) r ON r.book_id = b.id
         LEFT JOIN v_peminjaman l ON l.book_id = b.id
-       GROUP BY b.id,b.title,b.isbn,b.author,b.publisher,b.publish_year,b.category_id,b.stock,b.total_stock,b.max_loan_days,b.fine_per_day,b.cover_url,b.description,b.shelf_location,b.created_at,b.updated_at,c.id,c.name,c.code,r.avg_rating
+       GROUP BY b.id,b.title,b.isbn,b.author,b.publisher,b.publish_year,b.category_id,b.stock,b.total_stock,b.max_loan_days,b.fine_per_day,b.cover_url,b.description,b.created_at,b.updated_at,c.id,c.name,c.code,r.avg_rating
        ORDER BY b.title`),
     query('SELECT id, name, code FROM v_kategori ORDER BY code'),
   ]);

@@ -7,7 +7,7 @@ export const MAX_ACTIVE_LOANS = 3;
 const BOOK_COLUMNS = `
   b.id, b.title, b.isbn, b.author, b.publisher, b.publish_year,
   b.stock, b.max_loan_days, b.fine_per_day, b.cover_url,
-  b.description, b.shelf_location, b.category_id,
+  b.description, b.category_id,
   c.name AS category_name, c.code AS category_code,
   COALESCE(r.avg_rating, 0)::float AS avg_rating,
   COALESCE(r.review_count, 0)::int AS review_count`;

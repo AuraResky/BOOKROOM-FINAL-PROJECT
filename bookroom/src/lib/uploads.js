@@ -14,8 +14,19 @@ export const UPLOAD_DIRECTORY = path.join(
 // Error khusus unggahan gambar
 export class UploadError extends Error {}
 
+// Mengubah judul buku menjadi format nama file
+function slugifyTitle(title) {
+  return String(title || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60);
+}
+
 // Memvalidasi dan menyimpan sampul buku
-export async function saveCover(file) {
+export async function saveCover(file, bookTitle = '') {
   // Lewati jika tidak ada file
   if (
     !file ||
@@ -25,9 +36,9 @@ export async function saveCover(file) {
     return null;
   }
 
-  // Batas ukuran file: 2 MB
-  if (file.size > 2 * 1024 * 1024) {
-    throw new UploadError('Ukuran sampul maksimal 2 MB.');
+  // Batas ukuran file
+  if (file.size > 5 * 1024 * 1024) {
+    throw new UploadError('Ukuran sampul maksimal 5 MB.');
   }
 
   const input = Buffer.from(await file.arrayBuffer());
@@ -58,13 +69,13 @@ export async function saveCover(file) {
     }
 
     // Menyesuaikan orientasi, ukuran, dan mengubah ke WebP
-    bytes = await decoder
+  bytes = await decoder
       .rotate()
       .resize({
-        width: 1600,
-        height: 2400,
-        fit: 'inside',
-        withoutEnlargement: true,
+        width: 800,
+        height: 1200,
+        fit: 'cover',
+        position: 'attention',
       })
       .webp({ quality: 90 })
       .toBuffer();
@@ -81,10 +92,13 @@ export async function saveCover(file) {
     );
   }
 
-  // Membuat nama file yang unik
+  // Membuat nama file berdasarkan judul buku + akhiran unik singkat
   const extension = 'webp';
   const mime = 'image/webp';
-  const name = crypto.randomUUID() + '.' + extension;
+  const slug = slugifyTitle(bookTitle);
+  const shortId = crypto.randomBytes(3).toString('hex');
+  const baseName = slug ? `${slug}-${shortId}` : crypto.randomUUID();
+  const name = `${baseName}.${extension}`;
 
   // Membuat folder dan menyimpan gambar
   await mkdir(UPLOAD_DIRECTORY, { recursive: true });

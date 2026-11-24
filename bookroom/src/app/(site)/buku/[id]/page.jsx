@@ -64,7 +64,6 @@ export default async function BookDetailPage({ params }) {
     ['Penerbit', book.publisher],
     ['Tahun Terbit', <Mono key="y">{book.publish_year}</Mono>],
     ['Kategori', <span key="c">{book.category_name} <Mono className="text-ink-soft">· {book.category_code}</Mono></span>],
-    ['Lokasi Rak', <Mono key="r">{book.shelf_location || '—'}</Mono>],
     ['Stok Buku', <StockBadge key="s" stock={book.stock} />],
     ['Maks. Lama Pinjam', `${book.max_loan_days} hari`],
     ['Tarif Denda', `${formatRupiah(book.fine_per_day)} / hari`],

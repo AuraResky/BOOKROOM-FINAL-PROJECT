@@ -430,7 +430,7 @@ export default async function CirculationPage({
         <p className="text-sm text-ink-muted">
           {rows.length} transaksi · Diurutkan berdasarkan{' '}
           <span className="font-semibold text-navy">
-            tanggal {dateHeading.toLowerCase()} (
+            {tab === 'riwayat' ? 'tanggal' : `tanggal ${dateHeading.toLowerCase()}`} (
             {order === 'asc' ? 'Terlama / ASC' : 'Terbaru / DESC'})
           </span>
         </p>

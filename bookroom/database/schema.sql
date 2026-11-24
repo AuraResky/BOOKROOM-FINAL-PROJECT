@@ -1,4 +1,5 @@
 BEGIN;
+
 CREATE TABLE pengguna (
  id SERIAL PRIMARY KEY, 
  nama_lengkap VARCHAR(120) NOT NULL, email VARCHAR(150) NOT NULL,
@@ -8,18 +9,21 @@ CREATE TABLE pengguna (
 );
 CREATE UNIQUE INDEX pengguna_email_unique ON pengguna(LOWER(email));
 CREATE UNIQUE INDEX pengguna_identity_unique ON pengguna(nomor_identitas);
+
 CREATE TABLE kategori_buku (
  id SERIAL PRIMARY KEY, nama_kategori VARCHAR(80) NOT NULL, kode_klasifikasi VARCHAR(20) NOT NULL,
  deskripsi TEXT, dibuat_pada TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE UNIQUE INDEX kategori_code_unique ON kategori_buku(UPPER(kode_klasifikasi));
 CREATE UNIQUE INDEX kategori_name_unique ON kategori_buku(LOWER(nama_kategori));
+
 CREATE TABLE gambar (
  id SERIAL PRIMARY KEY, nama_file TEXT NOT NULL UNIQUE, nama_asli VARCHAR(255) NOT NULL,
  jenis_file VARCHAR(30) NOT NULL CHECK(jenis_file IN ('image/jpeg','image/png','image/webp')),
  ukuran_byte INTEGER NOT NULL CHECK(ukuran_byte BETWEEN 1 AND 2097152), lokasi_file TEXT NOT NULL UNIQUE,
  diunggah_oleh INTEGER REFERENCES pengguna(id) ON DELETE SET NULL, diunggah_pada TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
 CREATE TABLE buku (
  id SERIAL PRIMARY KEY, judul VARCHAR(200) NOT NULL, isbn VARCHAR(13) NOT NULL UNIQUE,
  penulis VARCHAR(150) NOT NULL, penerbit VARCHAR(120) NOT NULL, tahun_terbit INTEGER NOT NULL CHECK(tahun_terbit BETWEEN 1450 AND 2100),
@@ -27,16 +31,18 @@ CREATE TABLE buku (
  stok_total INTEGER NOT NULL DEFAULT 0 CHECK(stok_total>=0), stok_tersedia INTEGER NOT NULL DEFAULT 0 CHECK(stok_tersedia BETWEEN 0 AND stok_total),
  batas_hari_pinjam INTEGER NOT NULL DEFAULT 14 CHECK(batas_hari_pinjam BETWEEN 1 AND 60),
  denda_per_hari INTEGER NOT NULL DEFAULT 1000 CHECK(denda_per_hari>=0),
- id_gambar_sampul INTEGER REFERENCES gambar(id) ON DELETE SET NULL, sinopsis TEXT, lokasi_rak VARCHAR(30),
+ id_gambar_sampul INTEGER REFERENCES gambar(id) ON DELETE SET NULL, sinopsis TEXT,
  dibuat_pada TIMESTAMPTZ NOT NULL DEFAULT NOW(), diubah_pada TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX buku_kategori_idx ON buku(id_kategori);
+
 CREATE TABLE eksemplar_buku (
  id SERIAL PRIMARY KEY, id_buku INTEGER NOT NULL REFERENCES buku(id) ON DELETE CASCADE,
  kode_eksemplar VARCHAR(60) NOT NULL UNIQUE,
  status VARCHAR(20) NOT NULL DEFAULT 'Tersedia' CHECK(status IN ('Tersedia','Dipinjam','Ditarik')),
  dibuat_pada TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
 CREATE SEQUENCE kode_peminjaman_seq;
 CREATE TABLE peminjaman (
  id SERIAL PRIMARY KEY, kode_transaksi VARCHAR(30) NOT NULL UNIQUE DEFAULT
@@ -58,6 +64,7 @@ CREATE TABLE peminjaman (
 CREATE UNIQUE INDEX peminjaman_eksemplar_aktif ON peminjaman(id_eksemplar) WHERE status NOT IN ('Selesai','Ditolak','Menunggu Konfirmasi');
 CREATE UNIQUE INDEX peminjaman_buku_aktif ON peminjaman(id_pengguna,id_buku) WHERE status NOT IN ('Selesai','Ditolak');
 CREATE INDEX peminjaman_pengguna_idx ON peminjaman(id_pengguna,status);
+
 CREATE TABLE perpanjangan_peminjaman (
  id SERIAL PRIMARY KEY, id_peminjaman INTEGER NOT NULL REFERENCES peminjaman(id) ON DELETE RESTRICT,
  tanggal_lama DATE NOT NULL, tanggal_baru DATE, tambahan_hari INTEGER NOT NULL CHECK(tambahan_hari>0),
@@ -66,6 +73,7 @@ CREATE TABLE perpanjangan_peminjaman (
  diproses_oleh INTEGER REFERENCES pengguna(id) ON DELETE SET NULL
 );
 CREATE UNIQUE INDEX perpanjangan_menunggu_unique ON perpanjangan_peminjaman(id_peminjaman) WHERE status='Diajukan';
+
 CREATE TABLE denda (
  id SERIAL PRIMARY KEY, id_peminjaman INTEGER NOT NULL UNIQUE REFERENCES peminjaman(id) ON DELETE RESTRICT,
  hari_terlambat INTEGER NOT NULL CHECK(hari_terlambat>0), tarif_per_hari INTEGER NOT NULL CHECK(tarif_per_hari>0),
@@ -73,29 +81,32 @@ CREATE TABLE denda (
  dibayar_pada TIMESTAMPTZ, diterima_oleh INTEGER REFERENCES pengguna(id) ON DELETE SET NULL, dibuat_pada TIMESTAMPTZ NOT NULL DEFAULT NOW(),
  CHECK(jumlah_denda=hari_terlambat*tarif_per_hari), CHECK((status_pembayaran='Lunas')=(dibayar_pada IS NOT NULL))
 );
+
 CREATE TABLE penilaian_buku (
  id SERIAL PRIMARY KEY, id_peminjaman INTEGER NOT NULL REFERENCES peminjaman(id) ON DELETE RESTRICT,
  id_pengguna INTEGER NOT NULL REFERENCES pengguna(id) ON DELETE RESTRICT, id_buku INTEGER NOT NULL REFERENCES buku(id) ON DELETE RESTRICT,
  nilai_bintang SMALLINT NOT NULL CHECK(nilai_bintang BETWEEN 1 AND 5), komentar TEXT NOT NULL,
  dibuat_pada TIMESTAMPTZ NOT NULL DEFAULT NOW(), diubah_pada TIMESTAMPTZ NOT NULL DEFAULT NOW(), UNIQUE(id_pengguna,id_buku)
 );
+
 CREATE TABLE pengumuman (
  id SERIAL PRIMARY KEY, judul VARCHAR(200) NOT NULL, isi TEXT NOT NULL,
  kategori VARCHAR(20) NOT NULL CHECK(kategori IN ('Operasional','Layanan','Acara')), tanggal_rilis DATE NOT NULL DEFAULT CURRENT_DATE,
  status VARCHAR(20) NOT NULL DEFAULT 'Draft' CHECK(status IN ('Draft','Published')), ditulis_oleh INTEGER REFERENCES pengguna(id) ON DELETE SET NULL,
  dibuat_pada TIMESTAMPTZ NOT NULL DEFAULT NOW(), diubah_pada TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
 CREATE TABLE sesi_login (
  id SERIAL PRIMARY KEY, id_pengguna INTEGER NOT NULL REFERENCES pengguna(id) ON DELETE CASCADE,
  token_hash VARCHAR(64) NOT NULL UNIQUE, berlaku_sampai TIMESTAMPTZ NOT NULL, dibuat_pada TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX sesi_pengguna_idx ON sesi_login(id_pengguna);
+
 CREATE TABLE percobaan_login (
  id SERIAL PRIMARY KEY, identitas_hash VARCHAR(64) NOT NULL, berhasil BOOLEAN NOT NULL,
  dicoba_pada TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX percobaan_identitas_waktu_idx ON percobaan_login(identitas_hash,dicoba_pada);
-
 
 CREATE TABLE notifikasi (
  id SERIAL PRIMARY KEY, id_pengguna INTEGER NOT NULL REFERENCES pengguna(id) ON DELETE CASCADE,
@@ -119,11 +130,14 @@ CREATE INDEX reservasi_antrean_idx ON reservasi_buku(id_buku,status,dibuat_pada)
 CREATE VIEW v_pengguna AS SELECT id,nama_lengkap AS full_name,email,kata_sandi_hash AS password_hash,peran AS role,
  nomor_identitas AS identity_number,nomor_telepon AS phone,program_studi AS study_program,aktif AS is_active,
  dibuat_pada AS created_at,diubah_pada AS updated_at FROM pengguna;
+
 CREATE VIEW v_kategori AS SELECT id,nama_kategori AS name,kode_klasifikasi AS code,deskripsi AS description,dibuat_pada AS created_at FROM kategori_buku;
+
 CREATE VIEW v_buku AS SELECT b.id,b.judul AS title,b.isbn,b.penulis AS author,b.penerbit AS publisher,b.tahun_terbit AS publish_year,
  b.id_kategori AS category_id,b.stok_tersedia AS stock,b.stok_total AS total_stock,b.batas_hari_pinjam AS max_loan_days,b.denda_per_hari AS fine_per_day,
- (SELECT lokasi_file FROM gambar WHERE id=b.id_gambar_sampul) AS cover_url,b.sinopsis AS description,b.lokasi_rak AS shelf_location,
+ (SELECT lokasi_file FROM gambar WHERE id=b.id_gambar_sampul) AS cover_url,b.sinopsis AS description,
  b.dibuat_pada AS created_at,b.diubah_pada AS updated_at FROM buku b;
+
 CREATE VIEW v_peminjaman AS SELECT p.id,p.kode_transaksi AS code,p.id_pengguna AS user_id,p.id_buku AS book_id,p.status,
  p.diajukan_pada AS requested_at,p.tanggal_pinjam AS loan_date,p.tanggal_jatuh_tempo AS due_date,p.tanggal_kembali AS return_date,
  p.durasi_pinjam_hari AS loan_days,p.tarif_denda_harian AS daily_fine,p.jumlah_perpanjangan AS extension_count,p.alasan_penolakan AS reject_reason,
@@ -132,16 +146,21 @@ CREATE VIEW v_peminjaman AS SELECT p.id,p.kode_transaksi AS code,p.id_pengguna A
  COALESCE(d.status_pembayaran,CASE WHEN p.status NOT IN ('Selesai','Ditolak','Menunggu Konfirmasi') AND
  CURRENT_DATE>p.tanggal_jatuh_tempo AND p.tarif_denda_harian>0 THEN 'Tertunggak' END) AS fine_status,
  d.dibayar_pada AS fine_paid_at,p.diproses_oleh AS handled_by,p.diubah_pada AS updated_at FROM peminjaman p LEFT JOIN denda d ON d.id_peminjaman=p.id;
+
 CREATE VIEW v_penilaian AS SELECT id,id_peminjaman AS loan_id,id_pengguna AS user_id,id_buku AS book_id,nilai_bintang AS rating,
  komentar AS comment,dibuat_pada AS created_at FROM penilaian_buku;
+
 CREATE VIEW v_pengumuman AS SELECT id,judul AS title,isi AS content,kategori AS category,tanggal_rilis AS release_date,status,
  ditulis_oleh AS author_id,dibuat_pada AS created_at,diubah_pada AS updated_at FROM pengumuman;
+
 CREATE VIEW v_notifikasi AS SELECT id,id_pengguna AS user_id,jenis AS type,judul AS title,pesan AS message,tautan AS link,
  dibaca AS is_read,dibuat_pada AS created_at FROM notifikasi;
+
 CREATE VIEW v_reservasi AS SELECT r.id,r.id_pengguna AS user_id,r.id_buku AS book_id,r.status,r.dibuat_pada AS created_at,
  r.siap_pada AS ready_at,r.batas_ambil AS pickup_deadline,r.diubah_pada AS updated_at,
  CASE WHEN r.status='Menunggu' THEN (SELECT COUNT(*)::int FROM reservasi_buku x WHERE x.id_buku=r.id_buku AND x.status='Menunggu'
   AND (x.dibuat_pada,x.id)<=(r.dibuat_pada,r.id)) END AS queue_position FROM reservasi_buku r;
+
 COMMIT;
 
 COMMENT ON TABLE gambar IS 'Metadata sampul; file disimpan di public/uploads/sampul-buku, bukan BYTEA.';

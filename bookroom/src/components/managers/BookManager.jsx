@@ -137,7 +137,7 @@ function BookForm({ book, categories, onDone }) {
           {book
             ? 'Sampul lama dipertahankan jika tidak diganti.'
             : 'Buku baru wajib memiliki gambar sampul.'}
-          {' '}Pilih JPEG, PNG, atau WebP maksimal 2 MB.
+          {' '}Pilih JPEG, PNG, atau WebP maksimal 5 MB.
         </p>
       </div>
 
@@ -254,7 +254,7 @@ function BookForm({ book, categories, onDone }) {
               className="mt-1 block text-xs text-ink-muted"
             >
               {book ? 'Opsional jika tidak diganti' : 'Wajib diunggah'}
-              {' '}· JPEG / PNG / WebP · Maksimal 2 MB
+              {' '}· JPEG / PNG / WebP · Maksimal 5 MB
             </span>
 
             {errors.cover_file && (
