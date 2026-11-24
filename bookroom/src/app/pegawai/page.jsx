@@ -91,8 +91,7 @@ const BASE = `
     (CURRENT_DATE - l.due_date)::int AS late_days,
     (l.return_date - l.due_date)::int AS returned_late,
 
-    GREATEST(CURRENT_DATE - l.due_date, 0)
-      * l.daily_fine AS est_fine,
+    GREATEST(CURRENT_DATE - l.due_date, 0) * l.daily_fine AS est_fine,
 
     b.id AS book_id,
     b.title,
@@ -328,6 +327,20 @@ export default async function CirculationPage({
     );
   }
 
+  // Pengurutan khusus kolom tanggal (ASC / DESC)
+  const defaultOrder = tab === 'riwayat' ? 'desc' : 'asc';
+  const order =
+    sp.order === 'asc' || sp.order === 'desc' ? sp.order : defaultOrder;
+  const sqlDir = order === 'desc' ? 'DESC' : 'ASC';
+
+  const dateColumnByTab = {
+    verifikasi: 'l.requested_at',
+    perpanjangan: 'l.due_date',
+    pengembalian: 'l.due_date',
+    riwayat: 'COALESCE(l.return_date, l.due_date, l.requested_at)',
+    denda: 'l.return_date',
+  };
+
   // Halaman transaksi dipilih melalui sidebar.
   const params = [];
   let search = '';
@@ -345,40 +358,22 @@ export default async function CirculationPage({
     `;
   }
 
-  const statements = {
-    verifikasi: `
-      ${BASE}
-      WHERE l.status = 'Menunggu Konfirmasi'
-      ${search}
-      ORDER BY l.requested_at
-    `,
-    perpanjangan: `
-      ${BASE}
-      WHERE l.status = 'Perpanjangan Diajukan'
-      ${search}
-      ORDER BY l.due_date
-    `,
-    pengembalian: `
-      ${BASE}
-      WHERE l.status IN ${ACTIVE}
-      ${search}
-      ORDER BY l.due_date
-    `,
-    riwayat: `
-      ${BASE}
-      WHERE TRUE
-      ${search}
-      ORDER BY l.updated_at DESC
-    `,
-    denda: `
-      ${BASE}
-      WHERE l.fine_status = 'Tertunggak'
-      ${search}
-      ORDER BY l.return_date
-    `,
+  const whereByTab = {
+    verifikasi: `l.status = 'Menunggu Konfirmasi'`,
+    perpanjangan: `l.status = 'Perpanjangan Diajukan'`,
+    pengembalian: `l.status IN ${ACTIVE}`,
+    riwayat: `TRUE`,
+    denda: `l.fine_status = 'Tertunggak'`,
   };
 
-  const rows = await query(statements[tab], params);
+  const sql = `
+    ${BASE}
+    WHERE ${whereByTab[tab]}
+    ${search}
+    ORDER BY ${dateColumnByTab[tab]} ${sqlDir} NULLS LAST, l.id ${sqlDir}
+  `;
+
+  const rows = await query(sql, params);
   const currentPage = TABS.find((item) => item.key === tab);
 
   const dateHeading =
@@ -390,12 +385,21 @@ export default async function CirculationPage({
           ? 'Tanggal'
           : 'Jatuh Tempo';
 
+  function buildUrl(nextOrder) {
+    const next = new URLSearchParams();
+    next.set('tab', tab);
+    if (q) next.set('q', q);
+    next.set('order', nextOrder);
+    return `${basePath}?${next.toString()}`;
+  }
+
+  const toggledOrder = order === 'asc' ? 'desc' : 'asc';
+
   return (
     <>
       <PageHeader
         eyebrow={eyebrow}
         title={currentPage.label}
-        description="Kelola transaksi melalui menu sidebar."
       />
 
       <nav
@@ -424,26 +428,59 @@ export default async function CirculationPage({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-ink-muted">
-          {rows.length} transaksi
+          {rows.length} transaksi · Diurutkan berdasarkan{' '}
+          <span className="font-semibold text-navy">
+            tanggal {dateHeading.toLowerCase()} (
+            {order === 'asc' ? 'Terlama / ASC' : 'Terbaru / DESC'})
+          </span>
         </p>
 
-        <form className="flex max-w-full items-center gap-2 rounded-lg border border-line bg-white px-3">
-          <input
-            type="hidden"
-            name="tab"
-            value={tab}
-          />
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Tombol pengurutan tanggal ASC / DESC */}
+          <div
+            className="inline-flex overflow-hidden rounded-lg border border-line bg-white text-xs font-semibold"
+            role="group"
+            aria-label="Urutkan berdasarkan tanggal"
+          >
+            <Link
+              href={buildUrl('asc')}
+              className={
+                order === 'asc'
+                  ? 'bg-navy px-3 py-2.5 text-white'
+                  : 'px-3 py-2.5 text-ink-muted hover:bg-canvas'
+              }
+              title={`Urutkan tanggal ${dateHeading.toLowerCase()} dari yang paling awal (ASC)`}
+            >
+              ↑ Terlama
+            </Link>
+            <Link
+              href={buildUrl('desc')}
+              className={
+                order === 'desc'
+                  ? 'bg-navy px-3 py-2.5 text-white'
+                  : 'px-3 py-2.5 text-ink-muted hover:bg-canvas'
+              }
+              title={`Urutkan tanggal ${dateHeading.toLowerCase()} dari yang paling baru (DESC)`}
+            >
+              ↓ Terbaru
+            </Link>
+          </div>
 
-          <IconSearch className="h-4 w-4 shrink-0 text-ink-soft" />
+          <form className="flex max-w-full items-center gap-2 rounded-lg border border-line bg-white px-3">
+            <input type="hidden" name="tab" value={tab} />
+            <input type="hidden" name="order" value={order} />
 
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="Cari nama, NIM, judul, kode"
-            aria-label="Cari transaksi"
-            className="w-56 min-w-0 bg-transparent py-2.5 text-sm focus:outline-none"
-          />
-        </form>
+            <IconSearch className="h-4 w-4 shrink-0 text-ink-soft" />
+
+            <input
+              name="q"
+              defaultValue={q}
+              placeholder="Cari nama, NIM, judul, kode"
+              aria-label="Cari transaksi"
+              className="w-56 min-w-0 bg-transparent py-2.5 text-sm focus:outline-none"
+            />
+          </form>
+        </div>
       </div>
 
       <div className="card mt-4 overflow-x-auto">
@@ -453,7 +490,18 @@ export default async function CirculationPage({
               <th className="px-5 py-3">Transaksi</th>
               <th className="px-3 py-3">Buku</th>
               <th className="px-3 py-3">Mahasiswa</th>
-              <th className="px-3 py-3">{dateHeading}</th>
+              <th className="px-3 py-3">
+                <Link
+                  href={buildUrl(toggledOrder)}
+                  className="inline-flex items-center gap-1.5 text-navy transition hover:opacity-80"
+                  title={`Klik untuk urutkan ${toggledOrder === 'asc' ? 'Terlama (ASC)' : 'Terbaru (DESC)'}`}
+                >
+                  <span>{dateHeading}</span>
+                  <span className="font-mono text-xs font-bold">
+                    {order === 'asc' ? '↑' : '↓'}
+                  </span>
+                </Link>
+              </th>
               <th className="px-5 py-3 text-right">Aksi</th>
             </tr>
           </thead>
