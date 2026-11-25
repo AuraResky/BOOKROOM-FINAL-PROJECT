@@ -12,6 +12,7 @@ import {
   normalizeIsbn,
   validateIsbn,
   intField,
+  BOOK_NUMERIC_FIELDS,
   hasErrors,
   fail,
   success,
@@ -31,11 +32,7 @@ import {
 function parseBook(formData) {
   const isbn = normalizeIsbn(formData.get('isbn'));
 
-  const year = intField(str(formData, 'publish_year'), {
-    label: 'Tahun terbit',
-    min: 1450,
-    max: new Date().getFullYear() + 1,
-  });
+  const year = intField(str(formData, 'publish_year'), BOOK_NUMERIC_FIELDS.publish_year);
 
   const stock = intField(str(formData, 'stock'), {
     label: 'Jumlah stok',
@@ -43,17 +40,9 @@ function parseBook(formData) {
     max: 1000,
   });
 
-  const days = intField(str(formData, 'max_loan_days'), {
-    label: 'Durasi pinjam',
-    min: 1,
-    max: 60,
-  });
+  const days = intField(str(formData, 'max_loan_days'), BOOK_NUMERIC_FIELDS.max_loan_days);
 
-  const fine = intField(str(formData, 'fine_per_day'), {
-    label: 'Tarif denda',
-    min: 0,
-    max: 100000,
-  });
+  const fine = intField(str(formData, 'fine_per_day'), BOOK_NUMERIC_FIELDS.fine_per_day);
 
   const category = intField(str(formData, 'category_id'), {
     label: 'Kategori',
@@ -70,7 +59,6 @@ function parseBook(formData) {
     stock: stock.value,
     max_loan_days: days.value,
     fine_per_day: fine.value,
-    shelf_location: str(formData, 'shelf_location'),
     description: str(formData, 'description'),
   };
 
@@ -81,7 +69,6 @@ function parseBook(formData) {
         ? 'Judul maksimal 200 karakter.'
         : null,
 
-    isbn: validateIsbn(isbn),
     author: !values.author ? 'Pengarang wajib diisi.' : null,
     publisher: !values.publisher ? 'Penerbit wajib diisi.' : null,
     publish_year: year.error,
@@ -98,6 +85,8 @@ function parseBook(formData) {
 async function saveBook(id, formData) {
   const staff = await requireRole('pegawai', 'admin');
   const { values: v, errors } = parseBook(formData);
+  const isbnError = validateIsbn(v.isbn);
+  if (!id) errors.isbn = isbnError;
 
   if (v.author.length > 150) {
     errors.author = 'Nama penulis maksimal 150 karakter.';
@@ -105,10 +94,6 @@ async function saveBook(id, formData) {
 
   if (v.publisher.length > 120) {
     errors.publisher = 'Nama penerbit maksimal 120 karakter.';
-  }
-
-  if (v.shelf_location.length > 30) {
-    errors.shelf_location = 'Lokasi rak maksimal 30 karakter.';
   }
 
   if (hasErrors(errors)) {
@@ -130,15 +115,20 @@ async function saveBook(id, formData) {
     // Memvalidasi gambar dan menyimpannya dengan nama acak
     uploaded = await saveCover(file);
 
-    await transaction(async (tx) => {
+    const validationError = await transaction(async (tx) => {
       if (id) {
         const existing = await tx.one(
-          'SELECT id FROM buku WHERE id=$1 FOR UPDATE',
+          'SELECT isbn FROM buku WHERE id=$1 FOR UPDATE',
           [validId(id)]
         );
 
         if (!existing) {
           throw new LibraryError('Buku tidak ditemukan.');
+        }
+
+        // ISBN lama boleh tetap tersimpan saat data lain diperbarui.
+        if (isbnError && v.isbn !== existing.isbn) {
+          return fail('Periksa kembali data buku.', { isbn: isbnError });
         }
       }
 
@@ -180,7 +170,6 @@ async function saveBook(id, formData) {
         v.max_loan_days,
         v.fine_per_day,
         imageId,
-        v.shelf_location || null,
         v.description || null,
       ];
 
@@ -199,10 +188,9 @@ async function saveBook(id, formData) {
                batas_hari_pinjam=$7,
                denda_per_hari=$8,
                id_gambar_sampul=COALESCE($9,id_gambar_sampul),
-               lokasi_rak=$10,
-               sinopsis=$11,
+               sinopsis=$10,
                diubah_pada=NOW()
-           WHERE id=$12
+           WHERE id=$11
            RETURNING id`,
           [...values, id]
         );
@@ -219,10 +207,9 @@ async function saveBook(id, formData) {
             batas_hari_pinjam,
             denda_per_hari,
             id_gambar_sampul,
-            lokasi_rak,
             sinopsis
           )
-          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
           RETURNING id`,
           values
         );
@@ -231,6 +218,11 @@ async function saveBook(id, formData) {
       // Menyesuaikan jumlah buku dengan stok
       await synchronizeCopies(tx, book.id, v.stock);
     });
+
+    if (validationError) {
+      await removeCover(uploaded);
+      return validationError;
+    }
   } catch (error) {
     // Menghapus file baru jika penyimpanan database gagal
     await removeCover(uploaded);

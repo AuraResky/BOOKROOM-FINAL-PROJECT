@@ -30,16 +30,14 @@ export function normalizeIsbn(raw) {
 }
 export function validateIsbn(isbn) {
   if (!isbn) return 'ISBN wajib diisi.';
-  if (/^\d{13}$/.test(isbn)) {
-    const sum = [...isbn].reduce((acc, ch, i) => acc + Number(ch) * (i % 2 ? 3 : 1), 0);
-    return sum % 10 === 0 ? null : 'Digit pemeriksa ISBN-13 tidak valid.';
-  }
-  if (/^\d{9}[\dX]$/.test(isbn)) {
-    const sum = [...isbn].reduce((acc, ch, i) => acc + (ch === 'X' ? 10 : Number(ch)) * (10 - i), 0);
-    return sum % 11 === 0 ? null : 'Digit pemeriksa ISBN-10 tidak valid.';
-  }
-  return 'ISBN harus 10 atau 13 digit angka.';
+  return /^(?:\d{10}|\d{13})$/.test(isbn) ? null : 'ISBN harus 10 atau 13 digit angka.';
 }
+
+export const BOOK_NUMERIC_FIELDS = {
+  publish_year: { label: 'Tahun terbit', min: 1450, max: 2026 },
+  max_loan_days: { label: 'Durasi pinjam', min: 7, max: 14 },
+  fine_per_day: { label: 'Tarif denda per hari', min: 1000, max: 2000 },
+};
 
 export function intField(value, { label, min, max, required = true }) {
   if (value === '' || value == null) return { error: required ? `${label} wajib diisi.` : null, value: null };

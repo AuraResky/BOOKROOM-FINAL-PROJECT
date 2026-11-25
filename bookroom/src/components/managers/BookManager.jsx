@@ -35,9 +35,7 @@ import {
   IconSearch,
 } from '@/components/ui/Icons';
 import { formatRupiah } from '@/lib/format';
-
-// Format dasar ISBN
-const ISBN_RE = /^(\d{9}[\dX]|\d{13})$/;
+import { BOOK_NUMERIC_FIELDS, intField, normalizeIsbn, str, validateIsbn } from '@/lib/validation';
 
 // Form tambah dan ubah buku
 function BookForm({ book, categories, onDone }) {
@@ -49,7 +47,7 @@ function BookForm({ book, categories, onDone }) {
   const [coverFile, setCoverFile] = useState(null);
   const [title, setTitle] = useState(book?.title || '');
 
-  const cleanIsbn = isbn.replace(/[-\s]/g, '').toUpperCase();
+  const cleanIsbn = normalizeIsbn(isbn);
 
   // Membuat pratinjau gambar yang dipilih
   useEffect(() => {
@@ -72,10 +70,7 @@ function BookForm({ book, categories, onDone }) {
       title: 'Judul',
       author: 'Pengarang',
       publisher: 'Penerbit',
-      publish_year: 'Tahun terbit',
       stock: 'Jumlah stok',
-      max_loan_days: 'Durasi pinjam',
-      fine_per_day: 'Tarif denda',
     };
 
     Object.entries(req).forEach(([key, label]) => {
@@ -84,10 +79,14 @@ function BookForm({ book, categories, onDone }) {
       }
     });
 
-    if (!cleanIsbn) {
-      local.isbn = 'ISBN wajib diisi.';
-    } else if (!ISBN_RE.test(cleanIsbn)) {
-      local.isbn = 'ISBN harus 10 atau 13 digit angka.';
+    for (const [field, limits] of Object.entries(BOOK_NUMERIC_FIELDS)) {
+      const { error } = intField(str(fd, field), limits);
+      if (error) local[field] = error;
+    }
+
+    const isbnError = validateIsbn(cleanIsbn);
+    if (isbnError && cleanIsbn !== book?.isbn) {
+      local.isbn = isbnError;
     }
 
     if (!fd.get('category_id')) {
@@ -159,8 +158,10 @@ function BookForm({ book, categories, onDone }) {
             name="isbn"
             value={isbn}
             onChange={(e) => setIsbn(e.target.value)}
+            inputMode="numeric"
             inputClassName="font-mono"
             placeholder="9780132350884"
+            hint="Masukkan 10 atau 13 digit angka."
             error={errors.isbn}
           />
 
@@ -198,6 +199,7 @@ function BookForm({ book, categories, onDone }) {
             inputMode="numeric"
             defaultValue={book?.publish_year}
             inputClassName="font-mono"
+            hint={`Maks. ${BOOK_NUMERIC_FIELDS.publish_year.max}`}
             error={errors.publish_year}
           />
 
@@ -216,6 +218,7 @@ function BookForm({ book, categories, onDone }) {
             inputMode="numeric"
             defaultValue={book?.max_loan_days ?? 14}
             inputClassName="font-mono"
+            hint={`${BOOK_NUMERIC_FIELDS.max_loan_days.min}–${BOOK_NUMERIC_FIELDS.max_loan_days.max} hari`}
             error={errors.max_loan_days}
           />
 
@@ -225,6 +228,7 @@ function BookForm({ book, categories, onDone }) {
             inputMode="numeric"
             defaultValue={book?.fine_per_day ?? 1000}
             inputClassName="font-mono"
+            hint={`${formatRupiah(BOOK_NUMERIC_FIELDS.fine_per_day.min)}–${formatRupiah(BOOK_NUMERIC_FIELDS.fine_per_day.max)}`}
             error={errors.fine_per_day}
           />
         </div>
