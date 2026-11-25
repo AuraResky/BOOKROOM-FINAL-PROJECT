@@ -48,15 +48,6 @@ export function intField(value, { label, min, max, required = true }) {
   return { error: null, value: n };
 }
 
-export function isValidUrl(u) {
-  try {
-    const url = new URL(u);
-    return url.protocol === 'https:' || url.protocol === 'http:';
-  } catch {
-    return false;
-  }
-}
-
 export function hasErrors(errors) {
   return Object.values(errors).some(Boolean);
 }

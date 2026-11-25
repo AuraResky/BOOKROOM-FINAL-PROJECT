@@ -20,11 +20,6 @@ export function toast(res) {
   );
 }
 
-// Hook untuk memanggil notifikasi
-export function useToast() {
-  return [null, toast];
-}
-
 // Menampilkan notifikasi di sudut halaman
 export function Toaster() {
   const [items, setItems] = useState([]);

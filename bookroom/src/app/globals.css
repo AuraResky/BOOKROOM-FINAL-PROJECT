@@ -140,36 +140,6 @@ tbody tr:hover { background: #F4F6FA; }
 .hero-search:focus-within { transform: translateY(-2px); box-shadow: 0 0 0 3px #C69B3D55, 0 10px 26px #061C3540; }
 .hero-category-links a { border: 1px solid #D3E2F23D; border-radius: 99px; padding: 5px 12px; color: #F0F4FA; font-size: 12px; transition: border-color 200ms ease-out, background-color 200ms ease-out, color 200ms ease-out; }
 .hero-category-links a:hover, .hero-category-links a:focus-visible { color: #F6DEA5; background: #FFFFFF0F; border-color: #C69B3D; }
-.featured-books { position: relative; min-width: 0; padding: 0 4px; color: #fff; }
-.featured-label { display: flex; gap: 10px; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; letter-spacing: .17em; color: #E4D3AC; }
-.featured-label > span { width: 24px; height: 1px; background: #C69B3D; }
-.featured-stage { position: relative; display: flex; align-items: center; justify-content: center; min-height: 303px; margin-top: 15px; }
-.featured-orbit { pointer-events: none; position: absolute; border: 1px solid #E5C98725; border-radius: 50%; }
-.featured-orbit-one { width: 290px; height: 290px; transform: rotate(-23deg) scaleY(.87); }
-.featured-orbit-two { width: 350px; height: 220px; transform: rotate(30deg); border-color: #CBDCF017; }
-.featured-sheet { pointer-events: none; position: absolute; width: 166px; height: 240px; border: 1px solid #A9BED238; border-radius: 3px; background: linear-gradient(145deg, #5A759D66, #112D4D); }
-.featured-sheet-back { transform: translate(33px, 6px) rotate(10deg); }
-.featured-sheet-front { transform: translate(-28px, 9px) rotate(-9deg); background: linear-gradient(145deg, #CFBD8A38, #18385A); border-color: #C69B3D33; }
-.featured-main { position: relative; z-index: 2; display: block; width: 160px; padding-bottom: 15px; transition: transform 300ms ease-out; animation: featuredEnter 320ms ease-out; }
-.featured-main > .book-object { filter: drop-shadow(12px 16px 16px #081D3955); animation: readingFloat 7s ease-in-out infinite; }
-.featured-main:hover, .featured-main:focus-visible { transform: translateY(-5px) scale(1.025); }
-.featured-main:hover .book-object, .featured-main:focus-visible .book-object { animation-play-state: paused; }
-.featured-open { display: flex; align-items: center; justify-content: center; gap: 6px; position: absolute; z-index: 3; left: 0; right: 3px; bottom: 15px; padding: 9px; border-radius: 0 0 3px 3px; background: #FFFFFFF2; color: #1A365D; font-size: 12px; font-weight: 600; opacity: 0; transform: translateY(4px); transition: opacity 200ms ease-out, transform 200ms ease-out; }
-.featured-main:hover .featured-open, .featured-main:focus-visible .featured-open { opacity: 1; transform: translateY(0); }
-.featured-availability { position: absolute; z-index: 3; bottom: 3px; display: flex; align-items: center; gap: 6px; border: 1px solid #E0E7EF50; border-radius: 99px; background: #102B4DE6; padding: 6px 11px; color: #EDF3F9; font-size: 11px; }
-.featured-information { min-height: 61px; margin-top: 11px; text-align: center; }
-.featured-information h2 { font-size: 16px; line-height: 1.5; font-weight: 600; }
-.featured-information p { margin-top: 4px; font-size: 12px; color: #E0E8F3; line-height: 1.6; }
-.featured-controls { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 14px; }
-.featured-control { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #CAD9EC66; border-radius: 50%; color: #EDF3F9; transition: background-color 180ms ease-out, transform 180ms ease-out; }
-.featured-control:hover { background: #FFFFFF14; }
-.featured-control:active { transform: scale(.94); }
-.featured-picks { display: flex; align-items: center; gap: 8px; }
-.featured-pick { min-width: 28px; padding: 4px; color: #C0D1E7; font-size: 11px; border-bottom: 1px solid transparent; transition: color 200ms ease-out, border-color 200ms ease-out; }
-.featured-pick:hover { color: #fff; }
-.featured-pick.is-active { color: #E7C98A; border-bottom-color: #C69B3D; }
-@keyframes readingFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-@keyframes featuredEnter { from { opacity: .35; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
 
 .interactive-surface { position: relative; transform: perspective(1000px) translateY(var(--surface-lift, 0px)) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)); transition: transform 260ms ease-out, box-shadow 260ms ease-out, border-color 260ms ease-out; }
 .interactive-surface::after { content: ''; pointer-events: none; position: absolute; z-index: 4; inset: 0; border-radius: inherit; background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 30%), #95B8E41A, transparent 55%); opacity: 0; transition: opacity 250ms ease-out; }
@@ -186,7 +156,7 @@ tbody tr:hover { background: #F4F6FA; }
 .interactive-book-card:hover .book-object, .interactive-book-card:focus-visible .book-object { transform: translateY(-5px) rotate(-1deg); filter: drop-shadow(3px 6px 5px #1A365D20); }
 .interactive-book-card:hover .book-card-stage::before { transform: scaleX(1); opacity: .8; }
 .cover-shine { pointer-events: none; position: absolute; z-index: 4; inset: 0; background: linear-gradient(110deg, transparent 25%, #FFFFFF08 40%, #FFFFFF65 50%, #FFFFFF08 60%, transparent 75%); transform: translateX(-130%); }
-.interactive-book-card:hover .cover-shine, .interactive-book-card:focus-visible .cover-shine, .featured-main:hover .cover-shine, .featured-main:focus-visible .cover-shine { animation: coverLight 800ms ease-out; }
+.interactive-book-card:hover .cover-shine, .interactive-book-card:focus-visible .cover-shine { animation: coverLight 800ms ease-out; }
 @keyframes coverLight { from { transform: translateX(-130%); } to { transform: translateX(130%); } }
 .book-detail-link svg { transition: transform 220ms ease-out; }
 .interactive-book-card:hover .book-detail-link svg, .interactive-book-card:focus-visible .book-detail-link svg { transform: translateX(3px); }
@@ -206,25 +176,16 @@ nav a > svg { transition: transform 200ms ease-out; }
 .card:focus-within { border-color: #A6B5CA; }
 .card:has(> .font-mono):hover { border-color: #9AAEC9; box-shadow: 0 5px 17px #1A365D0A; }
 @media (max-width: 1023px) {
-  .featured-books { max-width: 440px; width: 100%; margin: 0 auto; }
   .hero-editorial-title { max-width: 650px; font-size: clamp(2.8rem, 7vw, 4rem); }
 }
 @media (max-width: 640px) {
   .hero-editorial-title { font-size: clamp(2.6rem, 10vw, 3.3rem); }
-  .featured-stage { min-height: 286px; }
-  .featured-main { width: 149px; }
-  .featured-orbit-one { width: 248px; height: 248px; }
-  .featured-orbit-two { width: 270px; height: 185px; }
-  .featured-sheet { width: 150px; height: 222px; }
-  .featured-open { opacity: 1; transform: none; }
-  .featured-information h2 { font-size: 15px; }
 }
-@media (hover: none) { .featured-open { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .interactive-surface, .interactive-surface:hover, .interactive-surface:focus-visible,
   .interactive-book-card:hover .book-object, .interactive-book-card:focus-visible .book-object,
-  .featured-main:hover, .featured-main:focus-visible, .hero-search:focus-within { transform: none !important; }
-  .featured-main, .featured-main > .book-object, .cover-shine { animation: none !important; }
+  .hero-search:focus-within { transform: none !important; }
+  .cover-shine { animation: none !important; }
 }
 @media (hover: none) {
   .interactive-book-card:hover .book-object { transform: none; }

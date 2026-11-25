@@ -6,7 +6,6 @@ import { requireRole } from '@/lib/auth';
 import { fail,success } from '@/lib/validation';
 import * as service from '@/lib/library-service';
 import { markRead } from '@/lib/notifications';
-import { updateProfileAction as saveProfile } from './profile';
 // Pemeriksaan akun mahasiswa
 async function run(operation,message){
  const user=await requireRole('mahasiswa');
@@ -36,9 +35,3 @@ export async function markNotificationsReadAction(ids=null){
 }
 // Simpan rating dan ulasan
 export async function submitReviewAction(formData){return run(user=>service.saveReview(user,formData.get('loan_id'),Number(formData.get('rating')),formData.get('comment')),'Penilaian Anda berhasil disimpan.');}
-
-// Jalur impor lama untuk aksi profil mahasiswa.
-export async function updateProfileAction(formData) {
- await requireRole('mahasiswa');
- return saveProfile(formData);
-}

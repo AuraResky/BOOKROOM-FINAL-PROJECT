@@ -1,7 +1,6 @@
 // Label kecil untuk informasi detail buku
 import { IconCheck, IconBook } from '@/components/ui/Icons';
 
-export function categoryTone() { return 'bg-cream-100 text-ink-muted'; }
 export function CategoryPill({ name, className = '' }) {
   return <span className={`pill bg-cream-100 text-ink-muted ${className}`}>{name}</span>;
 }

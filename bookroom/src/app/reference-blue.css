@@ -2,13 +2,6 @@
 body { background: #F6F4F0; }
 .display, .font-display { font-family: var(--font-jakarta), sans-serif; font-weight: 750; line-height: 1.2; letter-spacing: -.035em; }
 h1, h2, h3 { text-wrap: balance; }
-.reference-navbar { background: linear-gradient(110deg, #102D50, #1A3E65); }
-.reference-navbar nav a { font-weight: 600; white-space: nowrap; }
-.reference-navbar .font-display { font-family: var(--font-jakarta), sans-serif; }
-.reference-navbar > div { gap: 20px; }
-.reference-navbar form input { width: 180px; }
-.reference-navbar .btn-primary { background: #F4F1E9; border-color: #F4F1E9; color: #15385E; }
-.reference-navbar .btn-primary:hover { background: #FFFFFF; }
 .reference-gold-rule { display: block; width: 76px; height: 3px; border-radius: 99px; background: #C69B3D; }
 .reference-home { overflow: hidden; background: #F6F4F0; }
 .reference-home-inner { display: grid; grid-template-columns: minmax(0, 1.04fr) minmax(0, 1fr); max-width: 1560px; margin: 0 auto; gap: 18px; padding: 28px 26px 32px; position: relative; }
@@ -147,8 +140,6 @@ h1, h2, h3 { text-wrap: balance; }
 
 @media (min-width: 1600px) { .reference-home-inner { padding-left: 32px; } }
 @media (max-width: 1250px) {
-  .reference-navbar > div { gap: 13px; }
-  .reference-navbar nav a { padding-left: 10px; padding-right: 10px; gap: 6px; font-size: 12px; }
   .reference-home-inner { grid-template-columns: minmax(0,1.06fr) minmax(0,1fr); padding-left: 22px; }
   .reference-home-stats > div { padding: 13px 9px; gap: 8px; }
   .home-stat-icon { width: 35px; height: 40px; }
