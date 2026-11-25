@@ -1,16 +1,23 @@
 // Halaman: halaman beranda dan daftar buku pilihan
 import Link from 'next/link';
-import { getPopularBooks, getPublishedAnnouncements, getCategoriesWithCount } from '@/lib/queries';
+import {
+  getRandomBooks,
+  getPopularBooks,
+  getPublishedAnnouncements,
+  getCategoriesWithCount,
+} from '@/lib/queries';
 import Hero from '@/components/site/Hero';
 import BookCard from '@/components/books/BookCard';
 import AnnouncementCard from '@/components/site/AnnouncementCard';
 import { IconArrowRight } from '@/components/ui/Icons';
 
 export default async function HomePage() {
-  const [popular, announcements, categories] = await Promise.all([
-    getPopularBooks(5), getPublishedAnnouncements(3), getCategoriesWithCount(),
+  const [featured, popular, announcements, categories] = await Promise.all([
+    getRandomBooks(),
+    getPopularBooks(5),
+    getPublishedAnnouncements(3),
+    getCategoriesWithCount(),
   ]);
-  const featured = popular.slice(0, 3);
   return (
     <>
       <Hero books={featured} categories={categories.filter((category) => category.book_count > 0)} />

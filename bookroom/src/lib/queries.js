@@ -42,6 +42,25 @@ export function getPopularBooks(limit = 5) {
   );
 }
 
+// Mengambil buku acak dengan stok yang belum ditahan reservasi
+export function getRandomBooks(limit = 3) {
+  return query(
+    `SELECT b.id, b.title, b.isbn, b.author, b.cover_url
+     FROM v_buku b
+     WHERE b.stock > 0
+       AND b.stock > (
+         SELECT COUNT(*)
+         FROM v_reservasi r
+         WHERE r.book_id = b.id
+           AND r.status = 'Siap Diambil'
+           AND r.pickup_deadline >= CURRENT_DATE
+       )
+     ORDER BY RANDOM()
+     LIMIT $1`,
+    [limit]
+  );
+}
+
 // Pilihan pengurutan query katalog
 const SORTS = {
   terbaru: 'b.publish_year DESC, b.title',
