@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { IconBell } from '@/components/ui/Icons';
 import { timeAgo } from '@/lib/format';
 
@@ -12,6 +13,8 @@ export default function NotificationBell({ initialUnread = 0 }) {
   const [unread, setUnread] = useState(initialUnread);
   const [items, setItems] = useState(null);
   const [error, setError] = useState('');
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
   const box = useRef(null);
 
   useEffect(() => setUnread(initialUnread), [initialUnread]);
@@ -27,6 +30,7 @@ export default function NotificationBell({ initialUnread = 0 }) {
 
   // Ambil data
   async function load() {
+    setItems(null);
     setError('');
     try {
       const res = await fetch('/api/notifikasi?limit=8', { cache: 'no-store' });
@@ -40,24 +44,32 @@ export default function NotificationBell({ initialUnread = 0 }) {
   }
 
   // Tandai semua dibaca
-  async function markAll() {
-    const res = await fetch('/api/notifikasi', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({}),
+  function markAll() {
+    startTransition(async () => {
+      setError('');
+      try {
+        const res = await fetch('/api/notifikasi', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+
+        setUnread(data.unread);
+        setItems((list) => list?.map((n) => ({ ...n, is_read: true })) ?? list);
+        router.refresh();
+      } catch (e) {
+        setError(e.message || 'Notifikasi belum dapat ditandai dibaca.');
+      }
     });
-    if (res.ok) {
-      const data = await res.json();
-      setUnread(data.unread);
-      setItems((list) => list?.map((n) => ({ ...n, is_read: true })) ?? list);
-    }
   }
 
   // Buka atau tutup panel
   function toggle() {
     const next = !open;
     setOpen(next);
-    if (next) load();
+    if (next && !pending) load();
   }
 
   return (
@@ -85,7 +97,8 @@ export default function NotificationBell({ initialUnread = 0 }) {
               <button
                 type="button"
                 onClick={markAll}
-                className="text-xs font-semibold text-navy underline-offset-4 hover:underline"
+                disabled={pending || items === null}
+                className="text-xs font-semibold text-navy underline-offset-4 hover:underline disabled:opacity-50"
               >
                 Tandai semua dibaca
               </button>
