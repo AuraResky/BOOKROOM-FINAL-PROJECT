@@ -12,7 +12,6 @@ import { createPortal } from 'react-dom';
 import {
   IconHome,
   IconBook,
-  IconRepeat,
   IconMegaphone,
   IconBell,
   IconMenu,
@@ -24,7 +23,6 @@ import styles from './Navbar.module.css';
 const ICONS = {
   home: IconHome,
   book: IconBook,
-  repeat: IconRepeat,
   megaphone: IconMegaphone,
   bell: IconBell,
   user: IconUser,
@@ -32,7 +30,6 @@ const ICONS = {
 
 export default function NavLinks({
   links,
-  member = false,
   guest = false,
 }) {
   const pathname = usePathname();
@@ -46,13 +43,6 @@ export default function NavLinks({
 
   const mobileLinks = [
     ...links,
-    ...(member
-      ? [{
-          href: '/mahasiswa/profil',
-          label: 'Profil Mahasiswa',
-          icon: 'user',
-        }]
-      : []),
     ...(guest
       ? [
           { href: '/login', label: 'Masuk', icon: 'user' },
@@ -76,12 +66,15 @@ export default function NavLinks({
     function measure() {
       const css = getComputedStyle(inner);
 
+      const sideWidth = Math.max(
+        brand.getBoundingClientRect().width,
+        actions.getBoundingClientRect().width
+      );
       const available =
         inner.clientWidth -
         parseFloat(css.paddingLeft) -
         parseFloat(css.paddingRight) -
-        brand.getBoundingClientRect().width -
-        actions.getBoundingClientRect().width -
+        2 * sideWidth -
         2 * (parseFloat(css.columnGap) || 0);
 
       const smallScreen = window.matchMedia(
@@ -162,10 +155,6 @@ export default function NavLinks({
   }, [open]);
 
   function active(href) {
-    if (href === '/mahasiswa') {
-      return pathname === '/mahasiswa';
-    }
-
     return href === '/'
       ? pathname === '/'
       : pathname === href || pathname.startsWith(href + '/');
@@ -190,10 +179,6 @@ export default function NavLinks({
       >
         <Icon className={styles.icon} />
         <span>{link.label}</span>
-
-        {link.badge > 0 && (
-          <span className={styles.badge}>{link.badge}</span>
-        )}
       </Link>
     );
   }

@@ -1,10 +1,7 @@
 // Logo, menu dan area akun pada navbar
 import Link from 'next/link';
 
-import {
-  LogoMark,
-  IconSearch,
-} from '@/components/ui/Icons';
+import { LogoMark } from '@/components/ui/Icons';
 
 import { initials } from '@/lib/format';
 import NavLinks from './NavLinks';
@@ -46,16 +43,6 @@ export default function TopNavbar({
       label: 'Katalog Buku',
       icon: 'book',
     },
-    ...(member
-      ? [
-          {
-            href: '/mahasiswa',
-            label: 'Pinjaman Saya',
-            icon: 'repeat',
-            badge: loanCount,
-          },
-        ]
-      : []),
     {
       href: '/pengumuman',
       label: 'Pengumuman',
@@ -81,31 +68,17 @@ export default function TopNavbar({
 
         <NavLinks
           links={links}
-          member={member}
           guest={!user}
         />
 
         <div className={styles.actions}>
-          <form
-            action="/katalog"
-            className={styles.search}
-            role="search"
-          >
-            <IconSearch className={styles.icon} />
-
-            <input
-              name="q"
-              aria-label="Cari katalog buku"
-              placeholder="Cari judul, penulis, atau ISBN…"
-            />
-          </form>
-
           {member && <NotificationBell initialUnread={unreadCount} />}
 
           {member ? (
             <ProfileMenu
               user={user}
               label={initials(user.full_name)}
+              loanCount={loanCount}
             />
           ) : (
             <>
