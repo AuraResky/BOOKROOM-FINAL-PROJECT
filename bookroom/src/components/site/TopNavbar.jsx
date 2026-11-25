@@ -51,7 +51,7 @@ export default function TopNavbar({
     {
       href: '/layanan',
       label: 'Layanan',
-      icon: 'bell',
+      icon: 'phone',
     },
   ];
 

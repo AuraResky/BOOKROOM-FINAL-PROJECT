@@ -13,7 +13,7 @@ import {
   IconHome,
   IconBook,
   IconMegaphone,
-  IconBell,
+  IconPhone,
   IconMenu,
   IconX,
   IconUser,
@@ -24,7 +24,7 @@ const ICONS = {
   home: IconHome,
   book: IconBook,
   megaphone: IconMegaphone,
-  bell: IconBell,
+  phone: IconPhone,
   user: IconUser,
 };
 

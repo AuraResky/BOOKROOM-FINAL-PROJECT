@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { LogoMark, IconLogout, IconRepeat, IconBooks, IconMegaphone, IconChart, IconUsers, IconTag, IconLog, IconBook, IconMenu, IconX, IconClock } from '@/components/ui/Icons';
+import { LogoMark, IconLogout, IconRepeat, IconBooks, IconMegaphone, IconChart, IconUsers, IconTag, IconLog, IconBook, IconMenu, IconX, IconClock, IconUser } from '@/components/ui/Icons';
 import { logoutAction } from '@/app/actions/auth';
 
 const ICONS = { repeat: IconRepeat, books: IconBooks, megaphone: IconMegaphone, chart: IconChart, users: IconUsers, tag: IconTag, log: IconLog, book: IconBook, clock: IconClock };
@@ -90,6 +90,13 @@ export default function Sidebar({ items, user, roleLabel, initials }) {
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/25 bg-white/10 text-xs font-semibold">{initials}</span>
             <span className={`min-w-0 ${hidden}`}><span className="block truncate text-sm font-medium">{user.full_name}</span><span className="mt-1 block truncate font-mono text-xs text-slate-200">{user.identity_number}</span></span>
           </div>
+          <Link href={`/${user.role}/profil`} onClick={() => setMobileOpen(false)}
+            aria-label="Profil" aria-current={pathname === `/${user.role}/profil` ? 'page' : undefined}
+            title={collapsed ? 'Profil' : undefined}
+            className="group relative flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-sm text-slate-200 hover:bg-white/10 hover:text-white aria-[current=page]:bg-white/10 aria-[current=page]:text-white">
+            <IconUser className="h-5 w-5 shrink-0" />
+            <span className={hidden}>Profil</span>
+          </Link>
           <form action={logoutAction}><button type="submit" className="group relative flex min-h-10 w-full items-center gap-3 rounded-md px-3 text-sm text-slate-200 hover:bg-white/10 hover:text-white" title={collapsed ? 'Keluar' : undefined} aria-label="Keluar"><IconLogout className="h-5 w-5 shrink-0" /><span className={hidden}>Keluar</span><Tooltip show={collapsed}>Keluar</Tooltip></button></form>
         </div>
       </aside>
