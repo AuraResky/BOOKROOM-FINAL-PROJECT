@@ -1,5 +1,6 @@
 'use client';
 
+import tableStyles from '@/components/staff/ResponsiveTable.module.css';
 import {
   useEffect,
   useMemo,
@@ -349,21 +350,23 @@ export default function BookManager({ books, categories }) {
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex flex-1 items-center gap-2 rounded-lg border border-line bg-cream-50 px-3">
+        <div className="flex w-full min-w-0 items-center gap-2 rounded-lg border border-line bg-cream-50 px-3 sm:w-auto sm:flex-1">
           <IconSearch className="h-4 w-4 text-ink-soft" />
 
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Cari judul, pengarang, ISBN"
-            className="w-full bg-transparent py-2.5 text-sm focus:outline-none"
+            aria-label="Cari buku"
+            className="w-full min-w-0 bg-transparent py-2.5 text-sm focus:outline-none"
           />
         </div>
 
         <select
           value={cat}
           onChange={(e) => setCat(e.target.value)}
-          className="input w-auto"
+          className="input w-full min-w-0 sm:w-auto"
+          aria-label="Filter kategori buku"
         >
           <option value="">Semua kategori</option>
 
@@ -384,8 +387,8 @@ export default function BookManager({ books, categories }) {
         </button>
       </div>
 
-      <div className="card mt-4 overflow-x-auto">
-        <table className="w-full min-w-[960px] text-sm">
+      <div className={`mt-4 ${tableStyles.container}`}>
+        <table role="table" aria-label="Daftar koleksi buku" className={`w-full text-sm ${tableStyles.table}`}>
           <thead className="table-head">
             <tr>
               <th className="px-5 py-3">Buku</th>
@@ -397,10 +400,10 @@ export default function BookManager({ books, categories }) {
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-line">
+          <tbody role="rowgroup" className="divide-y divide-line">
             {filtered.map((b) => (
-              <tr key={b.id} className="hover:bg-canvas/40">
-                <td className="px-5 py-3">
+              <tr role="row" key={b.id} className="hover:bg-canvas/40">
+                <td role="cell" className="px-5 py-3">
                   <div className="flex items-center gap-3">
                     <div className="group w-11 shrink-0">
                       <BookCover
@@ -423,49 +426,61 @@ export default function BookManager({ books, categories }) {
                   </div>
                 </td>
 
-                <td className="px-3 py-3">
-                  <p className="text-sm">{b.category_name}</p>
-                  <Mono className="text-ink-soft">
-                    {b.category_code}
-                  </Mono>
-                </td>
-
-                <td className="px-3 py-3">
-                  <p className="text-xs text-ink-muted">
-                    {b.publisher}
-                  </p>
-                  <Mono>{b.publish_year}</Mono>
-                </td>
-
-                <td className="px-3 py-3">
-                  <StockBadge stock={b.stock} />
-
-                  <p className="mt-1 text-xs text-ink-muted">
-                    Dari {b.total_stock} Stok Buku
-                  </p>
-
-                  {b.on_loan > 0 && (
-                    <p className="mt-1 text-xs text-ink-soft">
-                      {b.on_loan} sedang dipinjam
-                    </p>
-                  )}
-                </td>
-
-                <td className="px-3 py-3 text-xs text-ink-muted">
-                  <Mono>{b.max_loan_days} hari</Mono>
-                  <br />
-                  <Mono>{formatRupiah(b.fine_per_day)}/hari</Mono>
-
-                  <div className="mt-1">
-                    <Stars
-                      value={b.avg_rating}
-                      size="h-3 w-3"
-                    />
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Kategori</span>
+                  <div className="min-w-0">
+                    <p className="text-sm">{b.category_name}</p>
+                    <Mono className="text-ink-soft">
+                      {b.category_code}
+                    </Mono>
                   </div>
                 </td>
 
-                <td className="px-5 py-3">
-                  <div className="flex justify-end gap-1.5">
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Penerbit dan tahun</span>
+                  <div className="min-w-0">
+                    <p className="text-xs text-ink-muted">
+                      {b.publisher}
+                    </p>
+                    <Mono>{b.publish_year}</Mono>
+                  </div>
+                </td>
+
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Stok buku</span>
+                  <div className="min-w-0">
+                    <StockBadge stock={b.stock} />
+
+                    <p className="mt-1 text-xs text-ink-muted">
+                      Dari {b.total_stock} Stok Buku
+                    </p>
+
+                    {b.on_loan > 0 && (
+                      <p className="mt-1 text-xs text-ink-soft">
+                        {b.on_loan} sedang dipinjam
+                      </p>
+                    )}
+                  </div>
+                </td>
+
+                <td role="cell" className={`px-3 py-3 text-xs text-ink-muted ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Aturan pinjam</span>
+                  <div className="min-w-0">
+                    <Mono>{b.max_loan_days} hari</Mono>
+                    <br />
+                    <Mono>{formatRupiah(b.fine_per_day)}/hari</Mono>
+
+                    <div className="mt-1">
+                      <Stars
+                        value={b.avg_rating}
+                        size="h-3 w-3"
+                      />
+                    </div>
+                  </div>
+                </td>
+
+                <td role="cell" className="px-5 py-3">
+                  <div className={`flex justify-end gap-1.5 ${tableStyles.actions}`}>
                     <button
                       type="button"
                       onClick={() => setEditing(b)}
@@ -488,10 +503,11 @@ export default function BookManager({ books, categories }) {
                           ? 'Tidak dapat dihapus: buku sedang dipinjam'
                           : 'Hapus buku'
                       }
-                      className="btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger"
+                      className={`btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger ${tableStyles.deleteAction}`}
                       aria-label={`Hapus ${b.title}`}
                     >
                       <IconTrash className="h-3.5 w-3.5" />
+                      <span className={tableStyles.actionLabel}>Hapus</span>
                     </button>
                   </div>
                 </td>
@@ -499,8 +515,8 @@ export default function BookManager({ books, categories }) {
             ))}
 
             {!filtered.length && (
-              <tr>
-                <td
+              <tr role="row">
+                <td role="cell"
                   colSpan={6}
                   className="px-5 py-12 text-center text-ink-muted"
                 >

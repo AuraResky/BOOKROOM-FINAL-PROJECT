@@ -86,7 +86,7 @@ export function VerifyActions({ loanId, code, title, stock }) {
   return (
     <>
       {toast}
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex flex-col items-stretch gap-2 @[860px]:flex-row @[860px]:items-center @[860px]:justify-end">
         <button type="button" disabled={pending || stock < 1} title={stock < 1 ? 'Stok habis' : 'Setujui peminjaman'}
           onClick={() => run(() => approveLoanAction(loanId))} className="btn-success btn-sm">
           {pending ? <Spinner className="h-3.5 w-3.5" /> : <IconCheck className="h-3.5 w-3.5" />} Setujui
@@ -108,7 +108,7 @@ export function ExtensionActions({ loanId, code, title, days }) {
   return (
     <>
       {toast}
-      <div className="flex items-center justify-end gap-2">
+      <div className="flex flex-col items-stretch gap-2 @[860px]:flex-row @[860px]:items-center @[860px]:justify-end">
         <button type="button" disabled={pending} onClick={() => run(() => approveExtensionAction(loanId))} className="btn-success btn-sm">
           {pending ? <Spinner className="h-3.5 w-3.5" /> : <IconCheck className="h-3.5 w-3.5" />} Setujui +{days} hari
         </button>
@@ -129,7 +129,7 @@ export function ReturnAction({ loanId, code, title, lateDays, estFine }) {
   return (
     <>
       {toast}
-      <button type="button" onClick={() => setOpen(true)} className="btn-primary btn-sm whitespace-nowrap">
+      <button type="button" onClick={() => setOpen(true)} className="btn-primary btn-sm w-full whitespace-nowrap @[860px]:w-auto">
         <IconInbox className="h-3.5 w-3.5" /> Konfirmasi Kembali
       </button>
       <Modal open={open} onClose={() => setOpen(false)} title={`Pengembalian ${code}`} description={`“${title}”`} width="max-w-md">
@@ -158,7 +158,7 @@ export function PayFineAction({ loanId, code, amount, name }) {
   return (
     <>
       {toast}
-      <button type="button" onClick={() => setOpen(true)} className="btn-success btn-sm whitespace-nowrap">
+      <button type="button" onClick={() => setOpen(true)} className="btn-success btn-sm w-full whitespace-nowrap @[860px]:w-auto">
         <IconWallet className="h-3.5 w-3.5" /> Tandai Lunas
       </button>
       <Modal open={open} onClose={() => setOpen(false)} title="Konfirmasi Pelunasan Denda" width="max-w-md">

@@ -79,7 +79,7 @@ export default function CategoryManager({ items }) {
             </div>
             <h3 className="mt-3 font-bold text-navy">{c.name}</h3>
             <p className="mt-1 flex-1 text-sm text-ink-muted">{c.description || '—'}</p>
-            <div className="mt-4 flex gap-2 border-t border-line pt-3">
+            <div className="mt-4 flex flex-col gap-2 border-t border-line pt-3 sm:flex-row">
               <button type="button" onClick={() => setEditing(c)} className="btn-outline btn-sm flex-1"><IconEdit className="h-3.5 w-3.5" /> Ubah</button>
               <button type="button" disabled={c.book_count > 0} title={c.book_count > 0 ? 'Masih terhubung ke buku' : 'Hapus kategori'}
                 onClick={() => { setDeleteError(''); setDeleting(c); }} className="btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger">

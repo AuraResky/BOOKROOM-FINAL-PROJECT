@@ -1,3 +1,4 @@
+import tableStyles from '@/components/staff/ResponsiveTable.module.css';
 import Link from 'next/link';
 import { requireRole } from '@/lib/auth';
 import { query, one } from '@/lib/db';
@@ -75,8 +76,8 @@ export default async function ReservationQueuePage({ searchParams }) {
         ))}
       </nav>
 
-      <div className="card overflow-x-auto">
-        <table className="w-full min-w-[820px] text-sm">
+      <div className={tableStyles.container}>
+        <table role="table" aria-label="Antrean reservasi" className={`w-full text-sm ${tableStyles.table}`}>
           <thead className="table-head">
             <tr>
               <th className="px-5 py-3">Buku</th>
@@ -86,10 +87,10 @@ export default async function ReservationQueuePage({ searchParams }) {
               <th className="px-5 py-3">Dibuat</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody role="rowgroup" className="divide-y divide-line">
             {rows.map((r) => (
-              <tr key={r.id} className="align-middle hover:bg-canvas/40">
-                <td className="px-5 py-3">
+              <tr role="row" key={r.id} className="align-middle hover:bg-canvas/40">
+                <td role="cell" className="px-5 py-3">
                   <div className="flex items-center gap-3">
                     <div className="w-9 shrink-0">
                       <BookCover isbn={r.isbn} src={r.cover_url} title={r.title} author={r.author} size="xs" />
@@ -100,26 +101,42 @@ export default async function ReservationQueuePage({ searchParams }) {
                     </div>
                   </div>
                 </td>
-                <td className="px-3 py-3">
-                  <p className="font-semibold">{r.full_name}</p>
-                  <Mono className="text-ink-soft">{r.identity_number}</Mono>
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Mahasiswa</span>
+                  <div className="min-w-0">
+                    <p className="font-semibold">{r.full_name}</p>
+                    <Mono className="text-ink-soft">{r.identity_number}</Mono>
+                  </div>
                 </td>
-                <td className="px-3 py-3"><StatusBadge status={r.status} /></td>
-                <td className="px-3 py-3">
-                  {r.status === 'Menunggu' && <Mono className="font-semibold text-navy">#{r.queue_position}</Mono>}
-                  {r.status === 'Siap Diambil' && (
-                    <span className={r.overdue_pickup ? 'font-semibold text-danger' : ''}>
-                      <Mono>{formatDate(r.pickup_deadline, { short: true })}</Mono>
-                      {r.overdue_pickup && <span className="block text-xs">Lewat batas — kedaluwarsa otomatis pada transaksi berikutnya</span>}
-                    </span>
-                  )}
-                  {!['Menunggu', 'Siap Diambil'].includes(r.status) && <span className="text-ink-soft">—</span>}
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Status</span>
+                  <div className="min-w-0">
+                    <StatusBadge status={r.status} />
+                  </div>
                 </td>
-                <td className="px-5 py-3"><Mono className="text-ink-soft">{formatDateTime(r.created_at)}</Mono></td>
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Antrean / batas ambil</span>
+                  <div className="min-w-0">
+                    {r.status === 'Menunggu' && <Mono className="font-semibold text-navy">#{r.queue_position}</Mono>}
+                    {r.status === 'Siap Diambil' && (
+                      <span className={r.overdue_pickup ? 'font-semibold text-danger' : ''}>
+                        <Mono>{formatDate(r.pickup_deadline, { short: true })}</Mono>
+                        {r.overdue_pickup && <span className="block text-xs">Lewat batas — kedaluwarsa otomatis pada transaksi berikutnya</span>}
+                      </span>
+                    )}
+                    {!['Menunggu', 'Siap Diambil'].includes(r.status) && <span className="text-ink-soft">—</span>}
+                  </div>
+                </td>
+                <td role="cell" className={`px-5 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Dibuat</span>
+                  <div className="min-w-0">
+                    <Mono className="text-ink-soft">{formatDateTime(r.created_at)}</Mono>
+                  </div>
+                </td>
               </tr>
             ))}
             {!rows.length && (
-              <tr><td colSpan={5} className="px-5 py-12 text-center text-ink-muted">Tidak ada reservasi pada filter ini.</td></tr>
+              <tr role="row"><td role="cell" colSpan={5} className="px-5 py-12 text-center text-ink-muted">Tidak ada reservasi pada filter ini.</td></tr>
             )}
           </tbody>
         </table>

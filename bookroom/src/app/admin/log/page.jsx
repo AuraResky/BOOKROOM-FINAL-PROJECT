@@ -1,4 +1,5 @@
 // halaman log transaksi
+import tableStyles from '@/components/staff/ResponsiveTable.module.css';
 import Link from 'next/link';
 import { requireRole } from '@/lib/auth';
 import { query, one } from '@/lib/db';
@@ -70,23 +71,23 @@ export default async function LogPage({ searchParams }) {
         </>} />
 
       <form className="card flex flex-wrap items-end gap-3 p-4">
-        <label className="flex-1">
+        <label className="w-full min-w-0 sm:w-auto sm:flex-1">
           <span className="label">Cari</span>
           <span className="flex items-center gap-2 rounded-lg border border-line px-3 focus-within:border-navy-600">
-            <IconSearch className="h-4 w-4 text-ink-soft" />
-            <input name="q" defaultValue={q} placeholder="Kode, nama, NIM, judul" className="w-full bg-transparent py-2.5 text-sm focus:outline-none" />
+            <IconSearch className="h-4 w-4 shrink-0 text-ink-soft" />
+            <input name="q" defaultValue={q} placeholder="Kode, nama, NIM, judul" className="w-full min-w-0 bg-transparent py-2.5 text-sm focus:outline-none" />
           </span>
         </label>
-        <label>
+        <label className="min-w-0 max-w-full">
           <span className="label">Status transaksi</span>
-          <select name="status" defaultValue={status} className="input w-56">
+          <select name="status" defaultValue={status} className="input w-56 max-w-full">
             <option value="">Semua status</option>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </label>
-        <label>
+        <label className="min-w-0 max-w-full">
           <span className="label">Status denda</span>
-          <select name="denda" defaultValue={fine} className="input w-40">
+          <select name="denda" defaultValue={fine} className="input w-40 max-w-full">
             <option value="">Semua</option><option>Tertunggak</option><option>Lunas</option>
           </select>
         </label>
@@ -96,8 +97,8 @@ export default async function LogPage({ searchParams }) {
 
       <p className="mt-4 text-xs text-ink-muted"><span className="font-mono font-semibold text-navy">{total.n}</span> transaksi ditemukan</p>
 
-      <div className="card mt-2 overflow-x-auto">
-        <table className="w-full min-w-[1080px] text-sm">
+      <div className={`mt-2 ${tableStyles.container}`}>
+        <table role="table" aria-label="Log transaksi" className={`w-full text-sm ${tableStyles.table}`}>
           <thead className="table-head">
             <tr>
               <th className="px-5 py-3">Kode</th><th className="px-3 py-3">Mahasiswa</th><th className="px-3 py-3">Buku</th>
@@ -105,28 +106,57 @@ export default async function LogPage({ searchParams }) {
               <th className="px-3 py-3">Denda</th><th className="px-5 py-3">Petugas · Pembaruan</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody role="rowgroup" className="divide-y divide-line">
             {rows.map((r) => (
-              <tr key={r.id} className="align-top hover:bg-canvas/40">
-                <td className="px-5 py-3"><Mono className="font-semibold text-navy">{r.code}</Mono></td>
-                <td className="px-3 py-3"><p className="font-semibold">{r.full_name}</p><Mono className="text-ink-soft">{r.identity_number}</Mono></td>
-                <td className="max-w-[220px] px-3 py-3"><p className="leading-snug text-navy">{r.title}</p><Mono className="text-ink-soft">{r.isbn}</Mono></td>
-                <td className="px-3 py-3">
-                  <Mono>{formatDate(r.loan_date, { short: true })}</Mono> → <Mono className="font-semibold">{formatDate(r.due_date, { short: true })}</Mono>
-                  {r.extension_count > 0 && <p className="text-xs text-ink-soft">diperpanjang {r.extension_count}×</p>}
+              <tr role="row" key={r.id} className="align-top hover:bg-canvas/40">
+                <td role="cell" className="px-5 py-3"><Mono className="font-semibold text-navy">{r.code}</Mono></td>
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Mahasiswa</span>
+                  <div className="min-w-0">
+                    <p className="font-semibold">{r.full_name}</p><Mono className="text-ink-soft">{r.identity_number}</Mono>
+                  </div>
                 </td>
-                <td className="px-3 py-3"><Mono>{formatDate(r.return_date, { short: true })}</Mono></td>
-                <td className="px-3 py-3">
-                  <StatusBadge status={r.status} />
-                  {r.reject_reason && <p className="mt-1 max-w-[200px] text-xs leading-snug text-ink-soft">{r.reject_reason}</p>}
+                <td role="cell" className={`max-w-[220px] px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Buku</span>
+                  <div className="min-w-0">
+                    <p className="leading-snug text-navy">{r.title}</p><Mono className="text-ink-soft">{r.isbn}</Mono>
+                  </div>
                 </td>
-                <td className="px-3 py-3">
-                  {r.fine_status ? (<><Mono className="font-semibold">{formatRupiah(r.fine_amount)}</Mono><div className="mt-1"><StatusBadge status={r.fine_status} /></div></>) : <span className="text-ink-soft">—</span>}
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Pinjam → jatuh tempo</span>
+                  <div className="min-w-0">
+                    <Mono>{formatDate(r.loan_date, { short: true })}</Mono> → <Mono className="font-semibold">{formatDate(r.due_date, { short: true })}</Mono>
+                    {r.extension_count > 0 && <p className="text-xs text-ink-soft">diperpanjang {r.extension_count}×</p>}
+                  </div>
                 </td>
-                <td className="px-5 py-3"><p className="text-xs">{r.handler || '—'}</p><Mono className="text-ink-soft">{formatDateTime(r.updated_at)}</Mono></td>
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Dikembalikan</span>
+                  <div className="min-w-0">
+                    <Mono>{formatDate(r.return_date, { short: true })}</Mono>
+                  </div>
+                </td>
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Status</span>
+                  <div className="min-w-0">
+                    <StatusBadge status={r.status} />
+                    {r.reject_reason && <p className="mt-1 max-w-[200px] text-xs leading-snug text-ink-soft">{r.reject_reason}</p>}
+                  </div>
+                </td>
+                <td role="cell" className={`px-3 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Denda</span>
+                  <div className="min-w-0">
+                    {r.fine_status ? (<><Mono className="font-semibold">{formatRupiah(r.fine_amount)}</Mono><div className="mt-1"><StatusBadge status={r.fine_status} /></div></>) : <span className="text-ink-soft">—</span>}
+                  </div>
+                </td>
+                <td role="cell" className={`px-5 py-3 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Petugas · pembaruan</span>
+                  <div className="min-w-0">
+                    <p className="text-xs">{r.handler || '—'}</p><Mono className="text-ink-soft">{formatDateTime(r.updated_at)}</Mono>
+                  </div>
+                </td>
               </tr>
             ))}
-            {!rows.length && <tr><td colSpan={8} className="px-5 py-12 text-center text-ink-muted">Tidak ada transaksi.</td></tr>}
+            {!rows.length && <tr role="row"><td role="cell" colSpan={8} className="px-5 py-12 text-center text-ink-muted">Tidak ada transaksi.</td></tr>}
           </tbody>
         </table>
       </div>

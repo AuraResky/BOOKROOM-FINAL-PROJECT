@@ -1,5 +1,6 @@
 'use client';
 
+import tableStyles from '@/components/staff/ResponsiveTable.module.css';
 import { useMemo, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { createAnnouncementAction, updateAnnouncementAction, deleteAnnouncementAction } from '@/app/actions/announcements';
@@ -92,33 +93,49 @@ export default function AnnouncementManager({ items, today }) {
         <button type="button" onClick={() => setEditing('new')} className="btn-primary"><IconPlus className="h-4 w-4" /> Buat Pengumuman</button>
       </div>
 
-      <div className="card mt-4 overflow-x-auto">
-        <table className="w-full min-w-[820px] text-sm">
+      <div className={`mt-4 ${tableStyles.container}`}>
+        <table role="table" aria-label="Daftar pengumuman" className={`w-full text-sm ${tableStyles.table}`}>
           <thead className="table-head">
             <tr><th className="px-5 py-3">Judul</th><th className="px-3 py-3">Kategori</th><th className="px-3 py-3">Rilis</th><th className="px-3 py-3">Status</th><th className="px-5 py-3 text-right">Aksi</th></tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody role="rowgroup" className="divide-y divide-line">
             {shown.map((a) => (
-              <tr key={a.id} className="hover:bg-canvas/40">
-                <td className="max-w-md px-5 py-3.5">
+              <tr role="row" key={a.id} className="hover:bg-canvas/40">
+                <td role="cell" className="max-w-md px-5 py-3.5">
                   <p className="font-semibold text-navy">{a.title}</p>
                   <p className="mt-0.5 text-xs text-ink-muted">{a.content.replace(/\s+/g, ' ').slice(0, 110)}…</p>
                   <p className="mt-1 text-xs text-ink-soft">oleh {a.author_name || '—'}</p>
                 </td>
-                <td className="px-3 py-3.5"><Badge tone={TONE[a.category]}>{a.category}</Badge></td>
-                <td className="px-3 py-3.5"><Mono>{formatDate(a.release_date, { short: true })}</Mono></td>
-                <td className="px-3 py-3.5"><StatusBadge status={a.status} /></td>
-                <td className="px-5 py-3.5">
-                  <div className="flex justify-end gap-1.5">
+                <td role="cell" className={`px-3 py-3.5 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Kategori</span>
+                  <div className="min-w-0">
+                    <Badge tone={TONE[a.category]}>{a.category}</Badge>
+                  </div>
+                </td>
+                <td role="cell" className={`px-3 py-3.5 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Tanggal rilis</span>
+                  <div className="min-w-0">
+                    <Mono>{formatDate(a.release_date, { short: true })}</Mono>
+                  </div>
+                </td>
+                <td role="cell" className={`px-3 py-3.5 ${tableStyles.field}`}>
+                  <span className={tableStyles.label}>Status</span>
+                  <div className="min-w-0">
+                    <StatusBadge status={a.status} />
+                  </div>
+                </td>
+                <td role="cell" className="px-5 py-3.5">
+                  <div className={`flex justify-end gap-1.5 ${tableStyles.actions}`}>
                     <button type="button" onClick={() => setEditing(a)} className="btn-outline btn-sm"><IconEdit className="h-3.5 w-3.5" /> Ubah</button>
-                    <button type="button" onClick={() => { setDeleteError(''); setDeleting(a); }} className="btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger" aria-label={`Hapus ${a.title}`}>
+                    <button type="button" onClick={() => { setDeleteError(''); setDeleting(a); }} className={`btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger ${tableStyles.deleteAction}`} aria-label={`Hapus ${a.title}`}>
                       <IconTrash className="h-3.5 w-3.5" />
+                      <span className={tableStyles.actionLabel}>Hapus</span>
                     </button>
                   </div>
                 </td>
               </tr>
             ))}
-            {!shown.length && <tr><td colSpan={5} className="px-5 py-12 text-center text-ink-muted">Belum ada pengumuman.</td></tr>}
+            {!shown.length && <tr role="row"><td role="cell" colSpan={5} className="px-5 py-12 text-center text-ink-muted">Belum ada pengumuman.</td></tr>}
           </tbody>
         </table>
       </div>

@@ -144,43 +144,48 @@ export default function UserManager({ users, currentUserId, role, campusDomain }
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex rounded-lg border border-line bg-cream-50 p-1 text-sm font-semibold">
+        <div className="flex max-w-full flex-wrap gap-1 rounded-lg border border-line bg-cream-50 p-1 text-sm font-semibold">
           {tabs.map(([v, l]) => (
             <button key={l} type="button" onClick={() => router.push(v ? `${pathname}?peran=${v}` : pathname)}
-              className={`rounded-full px-3.5 py-1.5 ${role === v ? 'bg-coral text-white shadow-retro-sm' : 'text-ink-muted hover:text-navy'}`}>{l}</button>
+              className={`rounded-full px-2.5 py-1.5 sm:px-3.5 ${role === v ? 'bg-coral text-white shadow-retro-sm' : 'text-ink-muted hover:text-navy'}`}>{l}</button>
           ))}
         </div>
-        <div className="flex flex-1 items-center gap-2 rounded-lg border border-line bg-cream-50 px-3">
-          <IconSearch className="h-4 w-4 text-ink-soft" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, NIM/NIP" className="w-full bg-transparent py-2.5 text-sm focus:outline-none" />
+        <div className="flex w-full min-w-0 items-center gap-2 rounded-lg border border-line bg-cream-50 px-3 sm:w-auto sm:flex-1">
+          <IconSearch className="h-4 w-4 shrink-0 text-ink-soft" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari nama, email, NIM/NIP" aria-label="Cari pengguna" className="w-full min-w-0 bg-transparent py-2.5 text-sm focus:outline-none" />
         </div>
         <button type="button" onClick={() => setEditing('new')} className="btn-primary"><IconPlus className="h-4 w-4" /> Tambah Pengguna</button>
       </div>
 
-      <div className="card mt-4 overflow-x-auto">
-        <table className="w-full min-w-[900px] text-sm">
-          <thead className="table-head">
+      <div className="@container mt-4">
+        <table role="table" aria-label="Daftar pengguna" className="block w-full text-sm @[900px]:table @[900px]:rounded-xl @[900px]:bg-white @[900px]:shadow-card">
+          <thead className="table-head hidden @[900px]:table-header-group">
             <tr><th className="px-5 py-3">Pengguna</th><th className="px-3 py-3">Peran</th><th className="px-3 py-3">NIM / NIP</th><th className="px-3 py-3">Transaksi</th><th className="px-3 py-3">Status</th><th className="px-5 py-3 text-right">Aksi</th></tr>
           </thead>
-          <tbody className="divide-y divide-line">
+          <tbody role="rowgroup" className="flex flex-col gap-3 @[900px]:table-row-group @[900px]:divide-y @[900px]:divide-line">
             {shown.map((u) => {
               const self = u.id === currentUserId;
               const blockReason = self ? 'Tidak dapat menghapus akun sendiri' : u.open_loans > 0 ? 'Memiliki transaksi aktif' : null;
               return (
-                <tr key={u.id} className="hover:bg-canvas/40">
-                  <td className="px-5 py-3">
+                <tr key={u.id} role="row" className="card grid gap-3 p-4 @[420px]:grid-cols-2 @[900px]:table-row @[900px]:rounded-none @[900px]:border-0 @[900px]:bg-transparent @[900px]:shadow-none @[900px]:hover:bg-canvas/40">
+                  <td role="cell" className="min-w-0 border-b border-line pb-3 @[420px]:col-span-2 @[900px]:border-0 @[900px]:px-5 @[900px]:py-3">
                     <div className="flex items-center gap-3">
                       <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/5 text-xs font-bold text-navy">{initials(u.full_name)}</span>
                       <div className="min-w-0">
-                        <p className="font-semibold text-navy">{u.full_name} {self && <span className="text-xs font-bold uppercase text-gold-dark">(Anda)</span>}</p>
-                        <p className="text-xs text-ink-muted">{u.email}</p>
+                        <p className="wrap-anywhere font-semibold text-navy">{u.full_name} {self && <span className="text-xs font-bold uppercase text-gold-dark">(Anda)</span>}</p>
+                        <p className="wrap-anywhere text-xs text-ink-muted">{u.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-3"><Badge tone={ROLE_TONE[u.role]} dot={false}>{ROLE_LABEL[u.role]}</Badge>
+                  <td role="cell" className="min-w-0 @[900px]:px-3 @[900px]:py-3"><Badge tone={ROLE_TONE[u.role]} dot={false}>{ROLE_LABEL[u.role]}</Badge>
                     {u.study_program && <p className="mt-1 text-xs text-ink-soft">{u.study_program}</p>}</td>
-                  <td className="px-3 py-3"><Mono>{u.identity_number}</Mono><p className="text-xs text-ink-soft">sejak {formatDate(u.created_at, { short: true })}</p></td>
-                  <td className="px-3 py-3 text-xs">
+                  <td role="cell" className="min-w-0 @[900px]:px-3 @[900px]:py-3">
+                    <p className="mb-0.5 text-xs text-ink-muted @[900px]:hidden">{u.role === 'mahasiswa' ? 'NIM' : 'NIP / Identitas'}</p>
+                    <Mono className="wrap-anywhere">{u.identity_number}</Mono>
+                    <p className="text-xs text-ink-soft">sejak {formatDate(u.created_at, { short: true })}</p>
+                  </td>
+                  <td role="cell" className={`${u.role === 'mahasiswa' ? '' : 'hidden'} text-xs @[900px]:table-cell @[900px]:px-3 @[900px]:py-3`}>
+                    <p className="mb-0.5 text-ink-muted @[900px]:hidden">Transaksi</p>
                     {u.role === 'mahasiswa' ? (
                       <>
                         <span className="font-mono font-semibold text-navy">{u.open_loans}</span> <span className="text-ink-muted">aktif</span> · <span className="font-mono">{u.total_loans}</span> <span className="text-ink-muted">total</span>
@@ -188,20 +193,21 @@ export default function UserManager({ users, currentUserId, role, campusDomain }
                       </>
                     ) : <span className="text-ink-soft">—</span>}
                   </td>
-                  <td className="px-3 py-3"><StatusBadge status={u.is_active ? 'Aktif' : 'Nonaktif'} /></td>
-                  <td className="px-5 py-3">
-                    <div className="flex justify-end gap-1.5">
+                  <td role="cell" className="@[900px]:px-3 @[900px]:py-3"><StatusBadge status={u.is_active ? 'Aktif' : 'Nonaktif'} /></td>
+                  <td role="cell" className="border-t border-line pt-3 @[420px]:col-span-2 @[900px]:border-0 @[900px]:px-5 @[900px]:py-3">
+                    <div className="flex flex-col gap-2 @[900px]:flex-row @[900px]:justify-end @[900px]:gap-1.5">
                       <button type="button" onClick={() => setEditing(u)} className="btn-outline btn-sm"><IconEdit className="h-3.5 w-3.5" /> Ubah</button>
                       <button type="button" disabled={!!blockReason} title={blockReason || 'Hapus pengguna'} onClick={() => { setDeleteError(''); setDeleting(u); }}
                         className="btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger" aria-label={`Hapus ${u.full_name}`}>
                         <IconTrash className="h-3.5 w-3.5" />
+                        <span className="@[900px]:hidden">Hapus</span>
                       </button>
                     </div>
                   </td>
                 </tr>
               );
             })}
-            {!shown.length && <tr><td colSpan={6} className="px-5 py-12 text-center text-ink-muted">Tidak ada pengguna.</td></tr>}
+            {!shown.length && <tr role="row" className="card block @[900px]:table-row @[900px]:border-0 @[900px]:shadow-none"><td role="cell" colSpan={6} className="block px-5 py-12 text-center text-ink-muted @[900px]:table-cell">Tidak ada pengguna.</td></tr>}
           </tbody>
         </table>
       </div>

@@ -1,0 +1,99 @@
+.container {
+  container-type: inline-size;
+}
+
+.table {
+  border-radius: 0.75rem;
+  background: white;
+  box-shadow: var(--shadow-card);
+  overflow-wrap: anywhere;
+}
+
+.label {
+  display: none;
+}
+
+@container (width < 64rem) {
+  .table {
+    display: block;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tbody {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .table tbody tr {
+    display: grid;
+    padding: 0.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    background: white;
+  }
+
+  .table tbody td {
+    display: block;
+    min-width: 0;
+    max-width: none;
+    padding: 0.5rem 0;
+  }
+
+  .table tbody td + td {
+    border-top: 1px solid var(--color-cream-200);
+  }
+
+  .table tbody td[colspan] {
+    padding-block: 2rem;
+  }
+
+  .table tbody td.field {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: 0.625rem;
+    align-items: baseline;
+    text-align: right;
+  }
+
+  .field :global(.whitespace-nowrap) {
+    white-space: normal;
+  }
+
+  .label {
+    display: block;
+    color: var(--color-ink-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .actions > button {
+    width: 100%;
+    min-height: 2.5rem;
+  }
+
+  .deleteAction {
+    border-color: var(--color-danger);
+    background: var(--color-danger);
+    color: white;
+  }
+
+  .deleteAction:hover:not(:disabled) {
+    background: #7f2329;
+  }
+}
+
+@container (width >= 64rem) {
+  .actionLabel {
+    display: none;
+  }
+}
