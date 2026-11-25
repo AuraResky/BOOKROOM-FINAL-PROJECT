@@ -85,11 +85,6 @@ export default function ServiceContent({
             ))}
           </ul>
 
-          <a href="tel:+62411586200" className="reference-contact">
-            <IconPhone className="h-5 w-5" />
-            Hubungi Petugas
-          </a>
-
           <p className="reference-hours-note">
             Waktu layanan WITA. Perubahan jadwal diumumkan melalui halaman pengumuman.
           </p>
