@@ -1,7 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { query, one, isUniqueViolation } from '@/lib/db';
+import { query, one, transaction, isUniqueViolation } from '@/lib/db';
 import { requireRole, hashPassword } from '@/lib/auth';
 import {
   str,
@@ -175,47 +175,69 @@ export async function updateUserAction(id, formData) {
   }
 
   try {
-    const row = await one(
-      `UPDATE v_pengguna
-       SET full_name=$1,
-           email=$2,
-           role=$3,
-           identity_number=$4,
-           study_program=NULLIF($5,''),
-           phone=NULLIF($6,''),
-           is_active=$7,
-           updated_at=NOW()
-       WHERE id=$8
-       RETURNING id`,
-      [
-        v.full_name,
-        v.email,
-        v.role,
-        v.identity_number,
-        v.role === 'mahasiswa' ? v.study_program : '',
-        v.phone,
-        v.is_active,
-        id,
-      ]
-    );
+    const result = await transaction(async (tx) => {
+      if (!v.is_active) {
+        // Kunci akun seperti saat pengembalian buku dan pelunasan denda.
+        const user = await tx.one(
+          'SELECT is_active FROM v_pengguna WHERE id=$1 FOR UPDATE',
+          [id]
+        );
+        if (!user) return fail('Pengguna tidak ditemukan.');
 
-    if (!row) {
-      return fail('Pengguna tidak ditemukan.');
-    }
+        if (user.is_active) {
+          const fine = await tx.one(
+            `SELECT 1 FROM v_peminjaman
+             WHERE user_id=$1 AND fine_status='Tertunggak'
+             LIMIT 1`,
+            [id]
+          );
+          if (fine) {
+            const message = 'Akun tidak dapat dinonaktifkan selama masih ada denda tertunggak.';
+            return fail(message, { is_active: message });
+          }
+        }
+      }
+
+      const row = await tx.one(
+        `UPDATE v_pengguna
+         SET full_name=$1,
+             email=$2,
+             role=$3,
+             identity_number=$4,
+             study_program=NULLIF($5,''),
+             phone=NULLIF($6,''),
+             is_active=$7,
+             updated_at=NOW()
+         WHERE id=$8
+         RETURNING id`,
+        [
+          v.full_name,
+          v.email,
+          v.role,
+          v.identity_number,
+          v.role === 'mahasiswa' ? v.study_program : '',
+          v.phone,
+          v.is_active,
+          id,
+        ]
+      );
+      if (!row) return fail('Pengguna tidak ditemukan.');
+
+      // Mengakhiri sesi pengguna lain setelah datanya diperbarui.
+      await tx.query(
+        `DELETE FROM sesi_login
+         WHERE id_pengguna=$1 AND id_pengguna<>$2`,
+        [id, admin.id]
+      );
+
+      return success(`Data ${v.full_name} diperbarui.`);
+    });
+
+    if (result.ok) revalidatePath('/admin', 'layout');
+    return result;
   } catch (error) {
     return uniqueError(error);
   }
-
-  // Mengakhiri sesi pengguna lain setelah datanya diperbarui
-  await query(
-    `DELETE FROM sesi_login
-     WHERE id_pengguna=$1 AND id_pengguna<>$2`,
-    [id, admin.id]
-  );
-
-  revalidatePath('/admin', 'layout');
-
-  return success(`Data ${v.full_name} diperbarui.`);
 }
 
 // Menghapus pengguna yang tidak memiliki transaksi atau riwayat
@@ -260,17 +282,17 @@ export async function deleteUserAction(id) {
     return fail('Pengguna tidak ditemukan.');
   }
 
+  // Memastikan tidak ada denda tertunggak
+  if (user.fines > 0) {
+    return fail(
+      `${user.full_name} masih memiliki denda tertunggak sehingga tidak dapat dihapus.`
+    );
+  }
+
   // Memastikan tidak ada transaksi aktif
   if (user.open_loans > 0) {
     return fail(
       `${user.full_name} masih memiliki ${user.open_loans} transaksi aktif sehingga tidak dapat dihapus.`
-    );
-  }
-
-  // Memastikan tidak ada denda tertunggak
-  if (user.fines > 0) {
-    return fail(
-      `${user.full_name} masih memiliki denda Tertunggak.`
     );
   }
 

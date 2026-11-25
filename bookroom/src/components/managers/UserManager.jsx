@@ -18,6 +18,8 @@ function UserForm({ user, campusDomain, isSelf, onDone }) {
   const [message, setMessage] = useState('');
   const [role, setRole] = useState(user?.role || 'mahasiswa');
   const [pending, startTransition] = useTransition();
+  const hasOutstandingFine = user?.is_active && user.fines > 0;
+  const statusLocked = isSelf || hasOutstandingFine;
 
   // Mengirim formulir dan menampilkan hasil proses
   function onSubmit(e) {
@@ -104,9 +106,14 @@ function UserForm({ user, campusDomain, isSelf, onDone }) {
         )}
         <TextInput label="Nomor HP" name="phone" defaultValue={user?.phone || ''} inputClassName="font-mono" error={errors.phone} />
       </div>
-      <label className={`flex items-center gap-3 rounded-lg border border-line px-4 py-3 ${isSelf ? 'opacity-60' : ''}`}>
-        <input type="checkbox" name="is_active" defaultChecked={user ? user.is_active : true} disabled={isSelf} className="h-4 w-4 accent-navy" />
-        <span className="text-sm"><span className="font-semibold text-navy">Akun aktif</span><span className="block text-xs text-ink-muted">Akun nonaktif tidak dapat masuk ke sistem.</span></span>
+      <label className="flex items-center gap-3 rounded-lg border border-line px-4 py-3">
+        <input type="checkbox" name="is_active" defaultChecked={user ? user.is_active : true} disabled={statusLocked} className="h-4 w-4 accent-navy disabled:opacity-60" />
+        <span className="text-sm">
+          <span className="font-semibold text-navy">Akun aktif</span>
+          <span className="block text-xs text-ink-muted">
+            {hasOutstandingFine ? 'Lunasi denda tertunggak sebelum menonaktifkan akun.' : 'Akun nonaktif tidak dapat masuk ke sistem.'}
+          </span>
+        </span>
       </label>
       {errors.is_active && <p className="field-error">{errors.is_active}</p>}
       <div className="flex justify-end gap-2">
@@ -165,7 +172,11 @@ export default function UserManager({ users, currentUserId, role, campusDomain }
           <tbody role="rowgroup" className="flex flex-col gap-3 @[900px]:table-row-group @[900px]:divide-y @[900px]:divide-line">
             {shown.map((u) => {
               const self = u.id === currentUserId;
-              const blockReason = self ? 'Tidak dapat menghapus akun sendiri' : u.open_loans > 0 ? 'Memiliki transaksi aktif' : null;
+              let blockReason = '';
+              if (self) blockReason = 'Tidak dapat menghapus akun sendiri';
+              else if (u.fines > 0) blockReason = 'Masih memiliki denda tertunggak';
+              else if (u.open_loans > 0) blockReason = 'Masih memiliki transaksi aktif';
+              else if (u.total_loans > 0) blockReason = 'Memiliki riwayat transaksi';
               return (
                 <tr key={u.id} role="row" className="card grid gap-3 p-4 @[420px]:grid-cols-2 @[900px]:table-row @[900px]:rounded-none @[900px]:border-0 @[900px]:bg-transparent @[900px]:shadow-none @[900px]:hover:bg-canvas/40">
                   <td role="cell" className="min-w-0 border-b border-line pb-3 @[420px]:col-span-2 @[900px]:border-0 @[900px]:px-5 @[900px]:py-3">
@@ -198,7 +209,7 @@ export default function UserManager({ users, currentUserId, role, campusDomain }
                     <div className="flex flex-col gap-2 @[900px]:flex-row @[900px]:justify-end @[900px]:gap-1.5">
                       <button type="button" onClick={() => setEditing(u)} className="btn-outline btn-sm"><IconEdit className="h-3.5 w-3.5" /> Ubah</button>
                       <button type="button" disabled={!!blockReason} title={blockReason || 'Hapus pengguna'} onClick={() => { setDeleteError(''); setDeleting(u); }}
-                        className="btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger" aria-label={`Hapus ${u.full_name}`}>
+                        className="btn-sm btn border border-line bg-cream-50 text-danger hover:border-danger" aria-label={`Hapus ${u.full_name}${blockReason ? `. ${blockReason}` : ''}`}>
                         <IconTrash className="h-3.5 w-3.5" />
                         <span className="@[900px]:hidden">Hapus</span>
                       </button>
