@@ -9,7 +9,6 @@ import { IconBooks, IconBook, IconUsers, IconRepeat, IconWallet, IconArrowRight 
 export const metadata = { title: 'Dashboard Admin' };
 
 const ACTIVE = `('Dipinjam','Perpanjangan Diajukan','Perpanjangan Disetujui','Perpanjangan Ditolak')`;
-const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 
 export default async function AdminDashboard() {
   await requireRole('admin');
@@ -30,30 +29,22 @@ export default async function AdminDashboard() {
            (SELECT COUNT(*) FROM v_reservasi WHERE status IN ('Menunggu','Siap Diambil'))::int AS reservations
       FROM b, l, u`);
 
-  const [monthly, byCategory, recent] = await Promise.all([
-    query(`
-      SELECT TO_CHAR(m, 'YYYY-MM') AS ym, EXTRACT(MONTH FROM m)::int AS mon,
-             COUNT(l.id)::int AS total
-        FROM GENERATE_SERIES(DATE_TRUNC('month', CURRENT_DATE) - INTERVAL '5 months', DATE_TRUNC('month', CURRENT_DATE), INTERVAL '1 month') m
-        LEFT JOIN v_peminjaman l ON DATE_TRUNC('month', l.loan_date) = m
-       GROUP BY m ORDER BY m`),
+  const [byCategory, recent] = await Promise.all([
     query(`
       SELECT c.name, c.code, COUNT(DISTINCT b.id)::int AS titles,
              COUNT(l.id) FILTER (WHERE l.status NOT IN ('Menunggu Konfirmasi','Ditolak'))::int AS loans
         FROM v_kategori c LEFT JOIN v_buku b ON b.category_id = c.id LEFT JOIN v_peminjaman l ON l.book_id = b.id
-       GROUP BY c.id,c.name,c.code ORDER BY loans DESC`),
+       GROUP BY c.id,c.name,c.code ORDER BY loans DESC, c.name, c.code`),
     query(`
       SELECT l.code, l.status, l.updated_at, b.title, u.full_name
         FROM v_peminjaman l JOIN v_buku b ON b.id = l.book_id JOIN v_pengguna u ON u.id = l.user_id
        ORDER BY l.updated_at DESC, l.id DESC LIMIT 7`),
   ]);
-  const maxMonth = Math.max(1, ...monthly.map((m) => m.total));
   const maxCat = Math.max(1, ...byCategory.map((c) => c.loans));
 
   return (
     <>
       <PageHeader eyebrow="Admin" title="Dashboard Statistik"
-        description="Ringkasan agregat koleksi, keanggotaan, sirkulasi, dan denda perpustakaan."
         actions={<>
           <a href="/api/admin/ekspor?jenis=transaksi" className="btn-outline btn-sm" download>Unduh Riwayat Peminjaman (CSV)</a>
           <a href="/api/admin/ekspor?jenis=rekap" className="btn-primary btn-sm" download>Unduh Rekap Bulanan (CSV)</a>
@@ -67,40 +58,34 @@ export default async function AdminDashboard() {
         <StatCard label="Total denda lunas" value={formatRupiah(stats.fine_paid)} hint={`Tertunggak ${formatRupiah(stats.fine_due)}`} icon={IconWallet} tone="green" />
       </div>
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_1fr]">
-        <section className="card p-6">
-          <h2 className="display text-2xl">Peminjaman per Bulan</h2>
-          <p className="text-xs text-ink-muted">Enam bulan terakhir, berdasarkan tanggal pinjam.</p>
-          <div className="mt-6 flex h-52 items-end gap-4">
-            {monthly.map((m, i) => (
-              <div key={m.ym} className="flex flex-1 flex-col items-center gap-2">
-                <span className="font-mono text-xs font-semibold text-navy">{m.total}</span>
-                <div className="w-full max-w-[56px] rounded-t-2xl border border-b-0 border-navy transition-all hover:-translate-y-0.5"
-                  style={{ height: `${Math.max(4, (m.total / maxMonth) * 150)}px`, background: '#1A365D' }} />
-                <span className="text-xs font-semibold text-ink-muted">{BULAN[m.mon - 1]}</span>
-              </div>
-            ))}
-          </div>
-        </section>
+      <section className="card mt-6 p-4 sm:p-6" aria-labelledby="category-circulation">
+        <h2 id="category-circulation" className="display text-2xl">Sirkulasi per Kategori</h2>
+        <p className="mt-1 text-sm text-ink-muted">Jumlah transaksi yang terealisasi per kategori.</p>
 
-        <section className="card p-6">
-          <h2 className="display text-2xl">Sirkulasi per Kategori</h2>
-          <p className="text-xs text-ink-muted">Jumlah transaksi yang terealisasi per kategori.</p>
-          <ul className="mt-5 space-y-3.5">
-            {byCategory.map((c) => (
-              <li key={c.code}>
-                <div className="flex items-baseline justify-between gap-2 text-sm">
-                  <span className="font-semibold text-navy">{c.name} <Mono className="text-ink-soft">{c.code}</Mono></span>
-                  <span className="font-mono text-xs text-ink-muted">{c.loans} pinjam · {c.titles} judul</span>
+        {byCategory.length > 0 ? (
+          <ul className="mt-5 grid gap-3 xl:grid-cols-2">
+            {byCategory.map((category) => (
+              <li key={category.code} className="min-w-0 rounded-xl border border-line px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-navy">
+                    {category.name}
+                    <Mono className="rounded bg-cream-200 px-1.5 py-0.5 text-ink-muted">{category.code}</Mono>
+                  </span>
+                  <span className="whitespace-nowrap text-xs text-ink-muted">
+                    <strong className="font-semibold text-navy">{category.loans} pinjam</strong>
+                    {' · '}{category.titles} judul
+                  </span>
                 </div>
-                <div className="mt-1.5 h-3 rounded-full border border-line bg-cream-200">
-                  <div className="h-full rounded-full bg-coral" style={{ width: `${(c.loans / maxCat) * 100}%` }} />
+                <div className="mt-2.5 h-2 rounded-full bg-cream-200" aria-hidden="true">
+                  <div className="h-full rounded-full bg-navy" style={{ width: `${(category.loans / maxCat) * 100}%` }} />
                 </div>
               </li>
             ))}
           </ul>
-        </section>
-      </div>
+        ) : (
+          <p className="mt-5 text-sm text-ink-muted">Belum ada kategori buku.</p>
+        )}
+      </section>
 
       <nav className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Panel navigasi utama">
         {[

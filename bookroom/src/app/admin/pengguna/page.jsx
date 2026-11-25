@@ -33,8 +33,7 @@ export default async function UsersPage({ searchParams }) {
 
   return (
     <>
-      <PageHeader eyebrow="Admin" title="Manajemen Pengguna"
-        description="Kelola akun Admin, Pegawai, dan Mahasiswa. Akun sendiri dan akun dengan transaksi aktif tidak dapat dihapus." />
+      <PageHeader eyebrow="Admin" title="Manajemen Pengguna"/>
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard label="Total akun" value={summary.total} icon={IconUsers} />
         <StatCard label="Admin & pegawai" value={summary.staff} icon={IconBook} tone="gold" />

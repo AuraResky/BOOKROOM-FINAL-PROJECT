@@ -130,7 +130,7 @@ function BookCell({ transaction }) {
       </div>
 
       <div className="min-w-0">
-        <p className="font-semibold leading-snug text-navy">
+        <p className="break-words font-semibold leading-snug text-navy">
           {transaction.title}
         </p>
 
@@ -145,7 +145,7 @@ function BookCell({ transaction }) {
 function MemberCell({ transaction }) {
   return (
     <div>
-      <p className="font-semibold text-ink">
+      <p className="break-words font-semibold text-ink">
         {transaction.full_name}
       </p>
 
@@ -435,7 +435,7 @@ export default async function CirculationPage({
           </span>
         </p>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           {/* Tombol pengurutan tanggal ASC / DESC */}
           <div
             className="inline-flex overflow-hidden rounded-lg border border-line bg-white text-xs font-semibold"
@@ -466,7 +466,7 @@ export default async function CirculationPage({
             </Link>
           </div>
 
-          <form className="flex max-w-full items-center gap-2 rounded-lg border border-line bg-white px-3">
+          <form className="flex w-full max-w-full items-center gap-2 rounded-lg border border-line bg-white px-3 sm:w-68">
             <input type="hidden" name="tab" value={tab} />
             <input type="hidden" name="order" value={order} />
 
@@ -477,15 +477,15 @@ export default async function CirculationPage({
               defaultValue={q}
               placeholder="Cari nama, NIM, judul, kode"
               aria-label="Cari transaksi"
-              className="w-56 min-w-0 bg-transparent py-2.5 text-sm focus:outline-none"
+              className="min-w-0 flex-1 bg-transparent py-2.5 text-sm focus:outline-none"
             />
           </form>
         </div>
       </div>
 
-      <div className="card mt-4 overflow-x-auto">
-        <table className="w-full min-w-[860px] text-sm">
-          <thead className="table-head">
+      <div className="@container mt-4">
+        <table role="table" aria-label={currentPage.label} className="block w-full text-sm @[860px]:table @[860px]:rounded-xl @[860px]:bg-white @[860px]:shadow-card">
+          <thead className="table-head hidden @[860px]:table-header-group">
             <tr>
               <th className="px-5 py-3">Transaksi</th>
               <th className="px-3 py-3">Buku</th>
@@ -506,13 +506,14 @@ export default async function CirculationPage({
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-line">
+          <tbody role="rowgroup" className="flex flex-col gap-3 @[860px]:table-row-group @[860px]:divide-y @[860px]:divide-line">
             {rows.map((transaction) => (
               <tr
                 key={transaction.id}
-                className="align-middle hover:bg-canvas/40"
+                role="row"
+                className="card grid gap-3 p-4 @[512px]:grid-cols-2 @[860px]:table-row @[860px]:rounded-none @[860px]:border-0 @[860px]:bg-transparent @[860px]:align-middle @[860px]:shadow-none @[860px]:hover:bg-canvas/40"
               >
-                <td className="px-5 py-3.5">
+                <td role="cell" className="border-b border-line pb-3 @[512px]:col-span-2 @[860px]:border-0 @[860px]:px-5 @[860px]:py-3.5">
                   <Mono className="font-semibold text-navy">
                     {transaction.code}
                   </Mono>
@@ -528,15 +529,17 @@ export default async function CirculationPage({
                   </div>
                 </td>
 
-                <td className="px-3 py-3.5">
+                <td role="cell" className="min-w-0 @[512px]:col-span-2 @[860px]:px-3 @[860px]:py-3.5">
                   <BookCell transaction={transaction} />
                 </td>
 
-                <td className="px-3 py-3.5">
+                <td role="cell" className="min-w-0 @[860px]:px-3 @[860px]:py-3.5">
+                  <p className="mb-0.5 text-xs text-ink-muted @[860px]:hidden">Mahasiswa</p>
                   <MemberCell transaction={transaction} />
                 </td>
 
-                <td className="px-3 py-3.5">
+                <td role="cell" className="min-w-0 @[860px]:px-3 @[860px]:py-3.5">
+                  <p className="mb-0.5 text-xs text-ink-muted @[860px]:hidden">{dateHeading}</p>
                   {tab === 'verifikasi' && (
                     <>
                       <Mono>
@@ -604,7 +607,10 @@ export default async function CirculationPage({
                   )}
                 </td>
 
-                <td className="px-5 py-3.5 text-right">
+                <td
+                  role="cell"
+                  className={`${tab === 'riwayat' ? 'hidden' : 'border-t border-line pt-3'} text-right @[512px]:col-span-2 @[860px]:table-cell @[860px]:border-0 @[860px]:px-5 @[860px]:py-3.5`}
+                >
                   {tab === 'verifikasi' && (
                     <VerifyActions
                       loanId={transaction.id}
@@ -664,10 +670,11 @@ export default async function CirculationPage({
             ))}
 
             {rows.length === 0 && (
-              <tr>
+              <tr role="row" className="card block @[860px]:table-row @[860px]:border-0 @[860px]:shadow-none">
                 <td
+                  role="cell"
                   colSpan={5}
-                  className="px-5 py-12 text-center text-sm text-ink-muted"
+                  className="block px-5 py-12 text-center text-sm text-ink-muted @[860px]:table-cell"
                 >
                   {q
                     ? 'Tidak ada transaksi yang cocok dengan pencarian.'

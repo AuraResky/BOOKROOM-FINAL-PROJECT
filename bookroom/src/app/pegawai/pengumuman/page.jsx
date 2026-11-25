@@ -16,8 +16,7 @@ export default async function AnnouncementAdminPage() {
   ]);
   return (
     <>
-      <PageHeader eyebrow={user.role === 'admin' ? 'Admin' : 'Pegawai Perpustakaan'} title="Manajemen Pengumuman"
-        description="Kelola kabar operasional, layanan, dan acara. Hanya status Published yang tampil untuk tamu dan mahasiswa." />
+      <PageHeader eyebrow={user.role === 'admin' ? 'Admin' : 'Pegawai Perpustakaan'} title="Manajemen Pengumuman"/>
       <AnnouncementManager items={items} today={today.d} />
     </>
   );

@@ -28,8 +28,7 @@ export default async function BooksPage() {
 
   return (
     <>
-      <PageHeader eyebrow={user.role === 'admin' ? 'Admin' : 'Pegawai Perpustakaan'} title="Manajemen Koleksi Buku"
-        description="Kelola metadata, stok, aturan pinjam, dan sampul. Buku yang sedang dipinjam tidak dapat dihapus." />
+      <PageHeader eyebrow={user.role === 'admin' ? 'Admin' : 'Pegawai Perpustakaan'} title="Manajemen Koleksi Buku"/>
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <StatCard label="Judul terdaftar" value={books.length} icon={IconBooks} />
         <StatCard label="Stok buku di rak / dipinjam" value={`${totalStock} / ${onLoan}`} icon={IconBook} tone="gold" />

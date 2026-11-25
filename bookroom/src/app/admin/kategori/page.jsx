@@ -11,8 +11,7 @@ export default async function CategoriesPage() {
   const items = await getCategoriesWithCount();
   return (
     <>
-      <PageHeader eyebrow="Admin" title="Manajemen Kategori Buku"
-        description="Kategori yang masih terhubung ke buku tidak dapat dihapus." />
+      <PageHeader eyebrow="Admin" title="Manajemen Kategori Buku"/>
       <CategoryManager items={items} />
     </>
   );
